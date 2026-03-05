@@ -89,7 +89,7 @@ Create a complete UX/UI execution plan that covers:
 - [x] Add grid/list/dense view toggle.
 - [ ] Add bulk selection and bulk actions (status move, shelf assign, delete).
 - [ ] Add quick-add book modal (manual + ISBN + OPDS URL).
-- [ ] Replace mock inbox with real pending import/merge queue.
+- [x] Replace mock inbox with real pending import/merge queue.
 - [ ] Add undo for destructive actions.
 - [x] Add proper empty-state onboarding for first-time users.
 
