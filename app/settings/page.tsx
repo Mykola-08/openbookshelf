@@ -3,8 +3,9 @@
 import { useMemo, useEffect, useState } from "react";
 import Link from "next/link";
 import { RotateCcw, WandSparkles, User, Settings2, Palette, Puzzle, Cpu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/utils/supabase/client";
@@ -25,10 +26,37 @@ import { BUILTIN_MODULES } from "@/lib/config/modules";
 import { useModules } from "@/lib/hooks/use-modules";
 import { cn } from "@/lib/utils";
 
+
+const SectionCard = ({ children, title, description, badge }: any) => (
+  <Card className="mb-8 border-border/40 shadow-none">
+    <CardHeader className="flex flex-row items-center justify-between pb-4">
+      <div className="space-y-1">
+        <CardTitle className="text-xl">{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </div>
+      {badge && <Badge variant="secondary" className="font-normal">{badge}</Badge>}
+    </CardHeader>
+    <CardContent className="pt-0">
+      {children}
+    </CardContent>
+  </Card>
+);
+
+const ListItem = ({ children, isLast, title, description, action }: any) => (
+  <div className={cn("flex items-center justify-between gap-4")}>
+    <div className="flex-1 space-y-1">
+      <p className="text-sm font-medium leading-none">{title}</p>
+      {description && <p className="text-[13px] text-muted-foreground">{description}</p>}
+      {children && <div className="mt-3">{children}</div>}
+    </div>
+    {action && <div className="shrink-0">{action}</div>}
+  </div>
+);
+
 export default function SettingsPage() {
   const { flags, setFeatureFlag, applyPreset, resetDefaults } = useFeatureFlags();
   const { moduleState } = useModules();
-  const { settings, setSetting, resetSettings } = useUserSettings({
+  const { settings, setSetting, resetSettings, saveState } = useUserSettings({
     syncToDb: Boolean(moduleState.enabled.settings_sync),
   });
 
@@ -55,48 +83,34 @@ export default function SettingsPage() {
   const toggleFlag = (key: FeatureFlagKey) => setFeatureFlag(key, !flags[key]);
   const reopenOnboarding = () => { window.localStorage.removeItem(ONBOARDING_DONE_KEY); openOnboardingDialog(); };
 
-  const SectionCard = ({ children, title, description, badge }: any) => (
-    <Card className="mb-8 border-border/40 shadow-none">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <div className="space-y-1.5">
-          <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </div>
-        {badge && <div className="text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-md font-medium">{badge}</div>}
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {children}
-      </CardContent>
-    </Card>
-  );
+  // Apple-like sections: large border-radius, pure white background on cards with subtle borders
+  
 
-  const ListItem = ({ children, isLast, title, description, action }: any) => (
-    <div className={cn("flex items-center justify-between gap-4")}>
-      <div className="flex-1 space-y-1">
-        <p className="text-sm font-medium leading-none">{title}</p>
-        {description && <p className="text-[13px] text-muted-foreground">{description}</p>}
-        {children && <div className="mt-3">{children}</div>}
-      </div>
-      {action && <div className="shrink-0">{action}</div>}
-    </div>
-  );
+  
 
   return (
     <main className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 min-h-screen">
-      <div className="space-y-1 mb-8 px-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
-        <p className="text-muted-foreground text-[15px]">
-          Manage your account, preferences, and module integrations.
-        </p>
+            <div className="space-y-1 mb-8 px-2 flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
+          <p className="text-muted-foreground text-[15px]">
+            Manage your account, preferences, and module integrations.
+          </p>
+        </div>
+        <div className="flex items-center text-sm font-medium">
+          {saveState === 'saving' && <span className="text-muted-foreground animate-pulse flex items-center gap-2"><div className="w-2 h-2 rounded-full border-2 border-muted-foreground border-t-transparent animate-spin"/> Saving...</span>}
+          {saveState === 'saved' && <span className="text-green-600 flex items-center gap-1">✓ Saved</span>}
+          {saveState === 'error' && <span className="text-destructive flex items-center gap-1">✕ Error saving</span>}
+        </div>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="mb-6 w-full flex overflow-x-auto justify-start">
-          <TabsTrigger value="profile"><User className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Profile</span></TabsTrigger>
-          <TabsTrigger value="preferences"><Settings2 className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Preferences</span></TabsTrigger>
-          <TabsTrigger value="features"><Cpu className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Features</span></TabsTrigger>
-          <TabsTrigger value="theme"><Palette className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Theme</span></TabsTrigger>
-          {moduleState.enabled.merge_assistant && <TabsTrigger value="modules"><Puzzle className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Advanced</span></TabsTrigger>}
+        <TabsList className="mb-6 w-full flex overflow-x-auto justify-start bg-muted p-1 border-none rounded-full">
+          <TabsTrigger value="profile" className="rounded-full px-4"><User className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Profile</span></TabsTrigger>
+          <TabsTrigger value="preferences" className="rounded-full px-4"><Settings2 className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Preferences</span></TabsTrigger>
+          <TabsTrigger value="features" className="rounded-full px-4"><Cpu className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Features</span></TabsTrigger>
+          <TabsTrigger value="theme" className="rounded-full px-4"><Palette className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Theme</span></TabsTrigger>
+          {moduleState.enabled.merge_assistant && <TabsTrigger value="modules" className="rounded-full px-4"><Puzzle className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Advanced</span></TabsTrigger>}
         </TabsList>
 
         <TabsContent value="profile" className="animate-in fade-in-50">
@@ -111,7 +125,7 @@ export default function SettingsPage() {
                 {deployment.isSelfHosted && role === "admin" && (
                   <ListItem 
                     title="Admin Actions" 
-                    action={<Button variant="secondary" className="rounded-md" asChild><Link href="/settings">Open Modules</Link></Button>} 
+                    action={<Button variant="secondary" className="rounded-full" asChild><Link href="/settings">Open Modules</Link></Button>} 
                     isLast 
                   />
                 )}
@@ -131,7 +145,7 @@ export default function SettingsPage() {
                     type="number" min={50} max={2000}
                     value={settings.cacheLimitMb}
                     onChange={(e) => setSetting("cacheLimitMb", Number(e.target.value))}
-                    className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 }
               />
@@ -142,7 +156,7 @@ export default function SettingsPage() {
                   <select
                     value={settings.summaryDepth}
                     onChange={(e) => setSetting("summaryDepth", e.target.value as any)}
-                    className="h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
                   >
                     <option value="short">Short</option>
                     <option value="balanced">Balanced</option>
@@ -163,7 +177,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="p-4 bg-muted/30 border-t border-border/50 flex justify-end">
-              <Button variant="outline" onClick={resetSettings} className="rounded-md">
+              <Button variant="outline" onClick={resetSettings} className="rounded-full">
                 <RotateCcw className="w-4 h-4 mr-2" /> Reset
               </Button>
             </div>
@@ -176,7 +190,7 @@ export default function SettingsPage() {
               {(Object.entries(FEATURE_PRESETS) as Array<[FeaturePresetId, { title: string; description: string }]>).map(([presetId, preset]) => (
                 <button 
                   key={presetId} 
-                  className="flex-1 text-left p-4 rounded-lg hover:bg-muted focus:bg-muted transition-colors focus:outline-none" 
+                  className="flex-1 text-left p-4 rounded-xl hover:bg-muted focus:bg-muted transition-colors focus:outline-none" 
                   onClick={() => applyPreset(presetId)}
                 >
                   <div className="font-medium text-[15px]">{preset.title}</div>
@@ -185,10 +199,10 @@ export default function SettingsPage() {
               ))}
             </div>
             <div className="p-4 bg-muted/30 border-t border-border/50 flex flex-wrap gap-2 justify-end">
-              <Button type="button" variant="outline" onClick={resetDefaults} className="rounded-md">
+              <Button type="button" variant="outline" onClick={resetDefaults} className="rounded-full">
                 <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset
               </Button>
-              <Button type="button" variant="secondary" onClick={reopenOnboarding} className="rounded-md">
+              <Button type="button" variant="secondary" onClick={reopenOnboarding} className="rounded-full">
                 <WandSparkles className="w-3.5 h-3.5 mr-1.5" /> Onboarding
               </Button>
             </div>
@@ -225,7 +239,7 @@ export default function SettingsPage() {
                   action={
                     <div className="flex items-center gap-3">
                       <span className="text-[13px] text-muted-foreground font-mono uppercase">{settings.themeAccent}</span>
-                      <div className="w-8 h-8 rounded-md overflow-hidden border border-border shrink-0">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-border shrink-0">
                         <input type="color" value={settings.themeAccent} onChange={(e) => setSetting("themeAccent", e.target.value)} className="w-12 h-12 -translate-x-2 -translate-y-2 cursor-pointer" />
                       </div>
                     </div>
@@ -236,7 +250,7 @@ export default function SettingsPage() {
                   action={
                     <div className="flex items-center gap-3">
                       <span className="text-[13px] text-muted-foreground font-mono uppercase">{settings.surfaceAccentA}</span>
-                      <div className="w-8 h-8 rounded-md overflow-hidden border border-border shrink-0">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-border shrink-0">
                         <input type="color" value={settings.surfaceAccentA} onChange={(e) => setSetting("surfaceAccentA", e.target.value)} className="w-12 h-12 -translate-x-2 -translate-y-2 cursor-pointer" />
                       </div>
                     </div>
@@ -247,7 +261,7 @@ export default function SettingsPage() {
                   action={
                     <div className="flex items-center gap-3">
                       <span className="text-[13px] text-muted-foreground font-mono uppercase">{settings.surfaceAccentB}</span>
-                      <div className="w-8 h-8 rounded-md overflow-hidden border border-border shrink-0">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-border shrink-0">
                         <input type="color" value={settings.surfaceAccentB} onChange={(e) => setSetting("surfaceAccentB", e.target.value)} className="w-12 h-12 -translate-x-2 -translate-y-2 cursor-pointer" />
                       </div>
                     </div>
@@ -275,7 +289,7 @@ export default function SettingsPage() {
                       type="number" min={0.5} max={0.99} step={0.01}
                       value={settings.mergeSimilarityThreshold}
                       onChange={(e) => setSetting("mergeSimilarityThreshold", Number(e.target.value))}
-                      className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus:ring-2 focus:ring-primary focus:outline-none"
                     />
                   }
                 />
@@ -287,7 +301,7 @@ export default function SettingsPage() {
                       type="number" min={0.4} max={0.95} step={0.01}
                       value={settings.mergeReviewThreshold}
                       onChange={(e) => setSetting("mergeReviewThreshold", Number(e.target.value))}
-                      className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus:ring-2 focus:ring-primary focus:outline-none"
                     />
                   }
                 />
@@ -299,7 +313,7 @@ export default function SettingsPage() {
                       type="number" min={2} max={10} step={1}
                       value={settings.aliasVoteQuorum}
                       onChange={(e) => setSetting("aliasVoteQuorum", Number(e.target.value))}
-                      className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus:ring-2 focus:ring-primary focus:outline-none"
                     />
                   }
                   isLast

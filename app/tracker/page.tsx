@@ -8,20 +8,22 @@ export const dynamic = 'force-dynamic';
 
 export default async function TrackerPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Get user_books with relations to generate the dashboard
-  const { data: userBooks } = await supabase
-    .from('user_books')
-    .select('*, books(*, authors(*))');
+  let query = supabase.from('user_books').select('*, books(*, authors(*))');
+  if (user) {
+    query = query.eq('user_id', user.id);
+  }
+  const { data: userBooks } = await query;
 
-  const reading = userBooks?.filter((ub: any) => ub.reading_state === 'reading') || [];
-  const planToRead = userBooks?.filter((ub: any) => ub.reading_state === 'plan_to_read') || [];
-  const finished = userBooks?.filter((ub: any) => ub.reading_state === 'finished') || [];
-  const dropped = userBooks?.filter((ub: any) => ub.reading_state === 'dropped') || [];
+  const reading = userBooks?.filter((ub: any) => ub.status === 'reading') || [];
+  const planToRead = userBooks?.filter((ub: any) => ub.status === 'toread') || [];
+  const finished = userBooks?.filter((ub: any) => ub.status === 'finished') || [];
+  const dropped = userBooks?.filter((ub: any) => ub.status === 'abandoned') || [];
 
   const columns = [
     { id: 'reading', label: 'Currently Reading', icon: <Flame className="w-4 h-4 text-orange-500" />, items: reading },
-    { id: 'plan', label: 'Plan to Read', icon: <Bookmark className="w-4 h-4 text-blue-500" />, items: planToRead },
+    { id: 'plan', label: 'Plan to Read', icon: <Bookmark className="w-4 h-4 text-primary" />, items: planToRead },
     { id: 'finished', label: 'Completed', icon: <CheckCircle2 className="w-4 h-4 text-green-500" />, items: finished },
   ];
 

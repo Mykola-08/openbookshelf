@@ -8,17 +8,20 @@ interface BookCardProps {
   source?: LibrarySource;
 }
 
+
+const SyncIcon = ({ syncState }: { syncState: string | undefined }) => {
+  const iconClass = "w-3 h-3";
+  switch (syncState) {
+    case 'synced': return <CheckCircle className={`${iconClass} text-green-600`} />;
+    case 'pending': return <RefreshCw className={`${iconClass} text-yellow-600`} />;
+    case 'locked': return <Lock className={`${iconClass} text-gray-500`} />;
+    case 'conflict': return <AlertTriangle className={`${iconClass} text-red-600`} />;
+    default: return null;
+  }
+};
+
 export default function BookCard({ book, source }: BookCardProps) {
-  const SyncIcon = () => {
-    const iconClass = "w-3 h-3";
-    switch (book.syncState) {
-      case 'synced': return <CheckCircle className={`${iconClass} text-green-600`} />;
-      case 'pending': return <RefreshCw className={`${iconClass} text-yellow-600`} />;
-      case 'locked': return <Lock className={`${iconClass} text-gray-500`} />;
-      case 'conflict': return <AlertTriangle className={`${iconClass} text-red-600`} />;
-      default: return null;
-    }
-  };
+  
 
   return (
     <div className="relative group bg-card border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
@@ -42,7 +45,7 @@ export default function BookCard({ book, source }: BookCardProps) {
           {source && <SourceBadge source={source} />}
         </div>
         <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-md rounded-full p-1.5 shadow-sm text-foreground">
-           <SyncIcon />
+           <SyncIcon syncState={book.syncState} />
         </div>
       </div>
       

@@ -37,6 +37,24 @@ interface DemoStore {
 const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";
 const DEMO_GLOBAL_KEY = "__openbookshelf_demo_store__";
 
+let isNode = typeof window === 'undefined';
+let fs: any = isNode ? require('fs') : null;
+let path: any = isNode ? require('path') : null;
+
+const DB_FILENAME = '.demo-db.json';
+
+const saveStore = (store: DemoStore) => {
+  try {
+    if (isNode && fs) {
+        fs.writeFileSync(path.join(process.cwd(), DB_FILENAME), JSON.stringify(store, null, 2));
+    } else if (!isNode) {
+        window.localStorage.setItem(DEMO_GLOBAL_KEY, JSON.stringify(store));
+    }
+  } catch (e) {
+    console.error('Failed to save local store', e);
+  }
+};
+
 const normalizeTitle = (text: string) =>
   text
     .toLowerCase()
@@ -48,6 +66,27 @@ const nowIso = () => new Date().toISOString();
 
 const getGlobalStore = (): DemoStore => {
   const runtimeGlobal = globalThis as unknown as Record<string, unknown>;
+
+  let loaded: DemoStore | null = null;
+  try {
+      if (isNode && fs) {
+          const dbPath = path.join(process.cwd(), DB_FILENAME);
+          if (fs.existsSync(dbPath)) {
+              loaded = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+          }
+      } else if (!isNode) {
+          const items = window.localStorage.getItem(DEMO_GLOBAL_KEY);
+          if (items) loaded = JSON.parse(items);
+      }
+  } catch(e) {
+      console.error(e);
+  }
+
+  if (loaded && loaded.tables) {
+      runtimeGlobal[DEMO_GLOBAL_KEY] = loaded;
+      return loaded;
+  }
+
   const existing = runtimeGlobal[DEMO_GLOBAL_KEY];
   if (existing && typeof existing === "object") {
     return existing as DemoStore;
@@ -160,6 +199,7 @@ const getGlobalStore = (): DemoStore => {
   );
 
   runtimeGlobal[DEMO_GLOBAL_KEY] = seededStore;
+  saveStore(seededStore);
   return seededStore;
 };
 
@@ -395,6 +435,7 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
     if (this.operation === "insert") {
       const insertedRows = this.payload.map((row) => addDefaultColumns(cloneRow(row)));
       table.push(...insertedRows);
+      saveStore(this.store);
       return { data: insertedRows.map((row) => this.withRelationships(cloneRow(row))), error: null };
     }
 
@@ -406,6 +447,7 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
         if (primaryCandidate) {
           Object.assign(primaryCandidate, prepared, { updated_at: nowIso() });
           upsertedRows.push(cloneRow(primaryCandidate));
+          saveStore(this.store);
           continue;
         }
 
@@ -417,9 +459,11 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
         if (conflictRow) {
           Object.assign(conflictRow, prepared, { updated_at: nowIso() });
           upsertedRows.push(cloneRow(conflictRow));
+          saveStore(this.store);
         } else {
           table.push(prepared);
           upsertedRows.push(cloneRow(prepared));
+          saveStore(this.store);
         }
       }
       return { data: upsertedRows.map((row) => this.withRelationships(row)), error: null };
@@ -433,6 +477,7 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
         if (!matches) continue;
         Object.assign(row, changes, { updated_at: nowIso() });
         updatedRows.push(cloneRow(row));
+      saveStore(this.store);
       }
       return { data: updatedRows.map((row) => this.withRelationships(row)), error: null };
     }
@@ -441,6 +486,7 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
       const keep = table.filter((row) => !this.filters.every((filter) => filter(row)));
       const removed = table.length - keep.length;
       this.store.tables[this.tableName] = keep;
+      saveStore(this.store);
       return { data: removed, error: null };
     }
 
@@ -507,6 +553,7 @@ class DemoSupabaseClient {
         updated_at: nowIso(),
       };
       aliases.push(newAlias);
+      saveStore(this.store);
       return { data: newAlias.id as string, error: null };
     }
 
@@ -526,6 +573,7 @@ class DemoSupabaseClient {
       if (existingVote) {
         existingVote.is_same = isSame;
         existingVote.updated_at = nowIso();
+      saveStore(this.store);
       } else {
         aliasVotes.push({
           alias_id: aliasId,
@@ -535,6 +583,7 @@ class DemoSupabaseClient {
           updated_at: nowIso(),
         });
       }
+      saveStore(this.store);
 
       const votes = aliasVotes.filter((vote) => vote.alias_id === aliasId);
       const yesVotes = votes.filter((vote) => Boolean(vote.is_same)).length;
@@ -545,6 +594,7 @@ class DemoSupabaseClient {
       alias.status = yesVotes >= 3 && yesVotes > noVotes ? "approved" : noVotes >= 3 ? "rejected" : "pending";
       alias.is_default = alias.status === "approved";
       alias.updated_at = nowIso();
+      saveStore(this.store);
 
       return {
         data: [

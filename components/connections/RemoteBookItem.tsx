@@ -37,7 +37,7 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
   return (
     <div className="flex bg-white border border-gray-200 rounded-lg p-4 gap-4 hover:shadow-md transition-shadow">
       {/* Cover Image */}
-      <div className="relative w-20 h-28 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+      <div className="relative w-20 h-28 bg-secondary rounded overflow-hidden flex-shrink-0">
         {coverUrl ? (
           <img 
             src={coverUrl} 
@@ -45,7 +45,7 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-400">
+          <div className="flex items-center justify-center h-full text-muted-foreground">
             <span className="text-xs">No Cover</span>
           </div>
         )}
@@ -53,19 +53,19 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
 
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>
-          <h3 className="font-semibold text-gray-900 truncate" title={entry.title}>{entry.title}</h3>
-          <p className="text-sm text-gray-500 truncate mb-1">
+          <h3 className="font-semibold text-foreground truncate" title={entry.title}>{entry.title}</h3>
+          <p className="text-sm text-muted-foreground truncate mb-1">
              {entry.authors?.map((a: any) => a.name).join(', ') || 'Unknown Author'}
           </p>
           {entry.published_year && (
-            <span className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+            <span className="inline-block px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded">
               {entry.published_year}
             </span>
           )}
         </div>
 
         <div className="flex items-center justify-between mt-2">
-           <div className="text-xs text-gray-400 truncate max-w-[200px]">
+           <div className="text-xs text-muted-foreground truncate max-w-[200px]">
              {entry.id}
            </div>
            
@@ -74,8 +74,8 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
              disabled={status === 'importing' || status === 'success'}
              className={`
                flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors
-               ${status === 'idle' ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' : ''}
-               ${status === 'importing' ? 'bg-gray-100 text-gray-500 cursor-wait' : ''}
+               ${status === 'idle' ? 'bg-primary/10 text-primary hover:bg-primary/20' : ''}
+               ${status === 'importing' ? 'bg-secondary text-muted-foreground cursor-wait' : ''}
                ${status === 'success' ? 'bg-green-50 text-green-700 cursor-default' : ''}
                ${status === 'error' ? 'bg-red-50 text-red-700 hover:bg-red-100' : ''}
              `}

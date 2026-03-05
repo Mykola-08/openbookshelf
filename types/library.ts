@@ -3,7 +3,7 @@ export type ReadingStatus = 'toread' | 'reading' | 'finished' | 'abandoned';
 
 export type TrustLevel = 'high' | 'medium' | 'low';
 
-export type SyncMode = 'off' | 'pull-only' | 'push-only' | 'two-way';
+export type SyncMode = 'off' | 'pull_only' | 'push_only' | 'two_way';
 export type AutomationType = 'auto' | 'ask' | 'manual';
 export type ConflictRule = 'app-wins' | 'source-wins' | 'ask';
 

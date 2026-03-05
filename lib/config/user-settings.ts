@@ -21,6 +21,11 @@ export interface UserSettings {
   fontSize: number;
   fontFamily: "sans" | "serif" | "mono";
   lineHeight: number;
+  // Community toggles
+  enableCommunity: boolean;
+  enableReviews: boolean;
+  enableGoals: boolean;
+  enableActivityFeed: boolean;
 }
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
@@ -40,6 +45,11 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   fontSize: 16,
   fontFamily: "serif",
   lineHeight: 1.5,
+  // Community toggles
+  enableCommunity: true,
+  enableReviews: true,
+  enableGoals: true,
+  enableActivityFeed: true,
 };
 
 export const USER_SETTINGS_STORAGE_KEY = "obs.settings.v2";

@@ -8,7 +8,7 @@ export const mockSources: LibrarySource[] = [
     url: 'https://openlibrary.org/people/johndoe',
     lastSync: new Date('2025-03-01T10:00:00Z'),
     policy: {
-      syncMode: 'pull-only',
+      syncMode: 'pull_only',
       automation: 'ask',
       conflictRule: 'ask',
       trustLevel: 'medium'
@@ -27,7 +27,7 @@ export const mockSources: LibrarySource[] = [
     url: 'https://amazon.com/kindle',
     lastSync: new Date('2025-03-04T08:00:00Z'),
     policy: {
-      syncMode: 'two-way',
+      syncMode: 'two_way',
       automation: 'auto',
       conflictRule: 'app-wins',
       trustLevel: 'high'

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 import { Globe, Lock, ArrowRightLeft } from "@/components/ui/icons";
 
 export default function AddSourcePage() {
@@ -41,7 +42,7 @@ export default function AddSourcePage() {
     
     if (error) {
         console.error(error);
-        alert("Failed to add source: " + error.message);
+        toast.error("Failed to add source: " + error.message);
     } else {
         router.push("/connections");
     }
@@ -49,30 +50,30 @@ export default function AddSourcePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-[family-name:var(--font-geist-sans)]">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg border border-gray-100 p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Add New Source</h1>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 font-[family-name:var(--font-geist-sans)]">
+      <div className="max-w-md w-full bg-card rounded-xl shadow-lg border border-border p-8">
+        <h1 className="text-2xl font-bold text-foreground mb-6">Add New Source</h1>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Source Name</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Source Name</label>
             <input 
               type="text" 
               required
               placeholder="e.g. My Public Library"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-input rounded-md focus:ring-primary focus:border-primary"
               value={formData.name}
               onChange={e => setFormData({...formData, name: e.target.value})}
             />
           </div>
 
           <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Source Type</label>
+             <label className="block text-sm font-medium text-foreground mb-1">Source Type</label>
              <div className="grid grid-cols-2 gap-4">
                <button 
                  type="button"
                  onClick={() => setFormData({...formData, type: 'public_url'})}
-                 className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${formData.type === 'public_url' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:bg-gray-50'}`}
+                 className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${formData.type === 'public_url' ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:bg-accent/50'}`}
                >
                  <Globe className="w-6 h-6 mb-2" />
                  <span className="text-sm font-medium">Public OPDS/Web</span>
@@ -89,16 +90,16 @@ export default function AddSourcePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Details URL</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Details URL</label>
             <input 
               type="url" 
               required
               placeholder="https://flibusta.is/opds"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+              className="w-full px-3 py-2 border border-input rounded-md focus:ring-primary focus:border-primary font-mono text-sm"
               value={formData.url}
               onChange={e => setFormData({...formData, url: e.target.value})}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
                Enter the OPDS feed URL or public profile link.
             </p>
           </div>
@@ -107,14 +108,14 @@ export default function AddSourcePage() {
             <button 
               type="button" 
               onClick={() => router.back()}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              className="px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
             >
               Cancel
             </button>
             <button 
               type="submit" 
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 text-primary-foreground rounded-md shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               {loading ? 'Adding...' : 'Add Source'}
             </button>

@@ -31,8 +31,8 @@ export function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       // In a real app this would go to a search page
-      // router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      console.log('Search:', searchQuery);
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      
     }
   };
 
@@ -56,7 +56,7 @@ export function Navbar() {
             <Input 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search books, authors, series..." 
+              placeholder="Search... (Ctrl+K)" 
               className="w-full pl-9 h-9 rounded-full bg-secondary/50 border-transparent focus-visible:bg-background focus-visible:border-border" 
             />
           </form>
@@ -97,13 +97,13 @@ export function Navbar() {
       </div>
 
       {/* Bottom Row: Navigation Links */}
-      <nav className="flex items-center px-4 md:px-8 h-12 w-full max-w-7xl mx-auto overflow-x-auto gap-1 scrollbar-hide text-sm">
+      <nav className="flex items-center px-4 md:px-8 h-12 w-full max-w-7xl mx-auto overflow-x-auto gap-1 scrollbar-hide text-sm pb-safe">
         {flags.enableLocalReader && (
           <Link
             href="/"
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors whitespace-nowrap",
-              pathname === '/' ? "bg-accent/60 text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent/40"
+              (pathname === '/' || pathname.startsWith('/book/') || pathname.startsWith('/read/')) ? "bg-accent/60 text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent/40"
             )}
           >
             <Library className="w-4 h-4" />
@@ -116,7 +116,7 @@ export function Navbar() {
             href="/tracker"
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors whitespace-nowrap",
-              pathname === '/tracker' ? "bg-accent/60 text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent/40"
+              pathname.startsWith('/tracker') ? "bg-accent/60 text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent/40"
             )}
           >
             <CheckCircle2 className="w-4 h-4" />

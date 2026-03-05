@@ -1,3 +1,5 @@
+import { CommandPalette } from '@/components/CommandPalette';
+import { Toaster } from 'sonner';
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
@@ -56,8 +58,10 @@ export default function RootLayout({
       <body
         className="font-sans antialiased flex flex-col min-h-screen app-shell"
       >
+        <CommandPalette />
+        <Toaster position="top-center" richColors />
         <AppThemeRuntime />
-        <Navbar />
+        
         <OnboardingDialog />
         {/* Main wrapper */}
         <div className="flex-1 flex flex-col motion-page-enter">

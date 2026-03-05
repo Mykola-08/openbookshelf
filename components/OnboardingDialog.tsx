@@ -14,12 +14,12 @@ export function OnboardingDialog() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleOpen = () => setOpen(true);
+    const handleOpen = () => setTimeout(() => setOpen(true), 0);
     window.addEventListener('open-onboarding', handleOpen);
     
     // Check if first time
     if (typeof window !== 'undefined' && !localStorage.getItem(ONBOARDING_DONE_KEY)) {
-      setOpen(true);
+      setTimeout(() => setOpen(true), 0);
     }
 
     return () => window.removeEventListener('open-onboarding', handleOpen);

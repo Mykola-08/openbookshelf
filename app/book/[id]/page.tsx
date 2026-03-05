@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MODULE_COOKIE_NAME, parseModuleState } from "@/lib/config/modules";
 import { GenerateDescriptionButton, GenerateChapterSummaryButton } from "@/components/AIGenerateButtons";
+import { CommunityBookSection } from "@/components/CommunityBookSection";
 
 type SearchParamValue = string | string[] | undefined;
 
@@ -17,12 +18,16 @@ const getSingleParam = (value: SearchParamValue): string => {
 
 const normalizeStatus = (status: string | null | undefined): "toread" | "reading" | "finished" | "abandoned" => {
   if (!status) return "toread";
-  if (status === "plan_to_read") return "toread";
-  if (status === "dropped") return "abandoned";
-  if (status === "toread" || status === "reading" || status === "finished" || status === "abandoned") {
-    return status;
-  }
-  return "toread";
+  // Transition map for legacy string constants
+  const map: Record<string, "toread" | "reading" | "finished" | "abandoned"> = {
+    plan_to_read: "toread",
+    dropped: "abandoned",
+    toread: "toread",
+    reading: "reading",
+    finished: "finished",
+    abandoned: "abandoned"
+  };
+  return map[status] || "toread";
 };
 
 interface AuthorSummary {
@@ -115,7 +120,7 @@ export default async function BookDetailsPage({
   const userBookRaw = book.user_books?.[0];
   const userBook = userBookRaw ? {
     ...userBookRaw,
-    status: normalizeStatus(userBookRaw.status || userBookRaw.reading_state),
+    status: normalizeStatus(userBookRaw.status),
   } : null;
   const file = book.book_files?.[0];
 

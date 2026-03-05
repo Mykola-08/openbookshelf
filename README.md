@@ -113,3 +113,5 @@ Admins can also define custom modules from `/modules`. Custom modules are persis
 - UI: Shadcn UI + Tailwind CSS
 - Reader Engine: react-reader (`epubjs`)
 - Database: Supabase (PostgreSQL) + Auth
+## Contributing
+We welcome contributions! Feel free to open issues or submit pull requests.
