@@ -1,0 +1,142 @@
+// Prisma SQLite Schema for Offline/Bare Metal mode
+// Rename to schema.prisma and run `npx prisma db push`
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum AppRole {
+  admin
+  member
+}
+
+model Author {
+  id    String @id @default(uuid())
+  name  String
+  bio   String?
+  books Book[]
+}
+
+model Series {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  books       Book[]
+}
+
+model Book {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  cover_url       String?
+  published_date  DateTime?
+  publisher       String?
+  isbn            String?
+  language        String?
+  
+  primaryAuthorId String?
+  author          Author?     @relation(fields: [primaryAuthorId], references: [id])
+  
+  seriesId        String?
+  series          Series?     @relation(fields: [seriesId], references: [id])
+  seriesNumber    Float?
+  
+  files           BookFile[]
+  chapters        BookChapter[]
+  userBooks       UserBook[]
+  aliases         BookAlias[]
+  
+  createdAt       DateTime    @default(now())
+}
+
+model BookFile {
+  id        String   @id @default(uuid())
+  format    String   // 'epub', 'pdf'
+  fileUrl   String   // The local /public/books path
+  sizeBytes Int?
+  
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+}
+
+model UserBook {
+  id               String   @id @default(uuid())
+  readingState     String   @default("plan_to_read") // 'plan_to_read', 'reading', 'finished', 'dropped'
+  readingLocation  String?  // EPUB CFI string
+  progress         Int      @default(0)
+  rating           Int?
+  notes            String?
+  
+  bookId           String
+  book             Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model BookChapter {
+  id            String    @id @default(uuid())
+  chapterNumber Float?
+  title         String?
+  chapterUrl    String?
+  wordCount     Int?
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  bookId        String
+  book          Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+}
+
+model BookAlias {
+  id              String   @id @default(uuid())
+  aliasTitle      String
+  normalizedAlias String
+  status          String   @default("pending") // pending, approved, rejected
+  isDefault       Boolean  @default(false)
+  yesVotes        Int      @default(0)
+  noVotes         Int      @default(0)
+  originSourceId  String?
+  originSourceName String?
+  originRemoteId  String?
+  suggestedBy     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  canonicalBookId String
+  canonicalBook   Book     @relation(fields: [canonicalBookId], references: [id], onDelete: Cascade)
+
+  votes           BookAliasVote[]
+
+  @@unique([canonicalBookId, normalizedAlias])
+}
+
+model BookAliasVote {
+  aliasId    String
+  userId     String
+  isSame     Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  alias      BookAlias @relation(fields: [aliasId], references: [id], onDelete: Cascade)
+
+  @@id([aliasId, userId])
+}
+
+model AppUserRole {
+  userId    String   @id
+  role      AppRole  @default(member)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserSetting {
+  userId    String   @id
+  settings  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

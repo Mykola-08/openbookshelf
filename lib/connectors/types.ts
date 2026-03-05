@@ -20,7 +20,7 @@ export interface ConnectorField {
   options?: { label: string; value: string }[];
   required?: boolean;
   placeholder?: string;
-  defaultValue?: any;
+  defaultValue?: string | boolean | number;
 }
 
 export interface ConnectorResult<T> {
@@ -53,4 +53,26 @@ export interface LibraryItem {
   };
   shelves?: string[];
   lastModified?: Date;
+}
+
+export interface OPDSAuthor {
+  name: string;
+}
+
+export interface OPDSLink {
+  rel?: string;
+  href: string;
+  type?: string;
+  title?: string;
+}
+
+export interface OPDSEntry {
+  id: string;
+  title: string;
+  authors?: OPDSAuthor[];
+  links?: OPDSLink[];
+  summary?: string;
+  content?: string;
+  updated?: string;
+  published_year?: number;
 }

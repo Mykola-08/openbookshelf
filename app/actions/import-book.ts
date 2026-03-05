@@ -1,28 +1,43 @@
 'use server'
 
 import { createClient } from "@/utils/supabase/server";
-import { importBookFromOPDS } from "@/lib/sync/import";
+import { importBookFromOPDS, type ImportBookResult } from "@/lib/sync/import";
 import { revalidatePath } from "next/cache";
+import type { OPDSEntry } from "@/lib/connectors/types";
 
-export async function importBookAction(entry: any, sourceId: string) {
+export interface ImportBookActionResponse {
+  success: boolean;
+  result?: ImportBookResult;
+  error?: string;
+}
+
+export async function importBookAction(
+  entry: OPDSEntry,
+  sourceId: string
+): Promise<ImportBookActionResponse> {
   const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   if (error || !user) {
-    return { success: false, error: 'Unauthorized' };
+    return { success: false, error: "Unauthorized" };
   }
 
   try {
-    const bookId = await importBookFromOPDS(entry, sourceId, user.id);
-    if (bookId) {
-        revalidatePath('/library');
-        revalidatePath(`/connections/${sourceId}/browse`);
-        return { success: true, bookId };
-    } else {
-        return { success: false, error: 'Failed to import book' };
+    const result = await importBookFromOPDS(entry, sourceId, user.id);
+    if (!result.userBookId) {
+      return { success: false, error: "Import completed without a user book mapping." };
     }
-  } catch (e: any) {
-    console.error('Import Error:', e);
-    return { success: false, error: e.message };
+
+    revalidatePath("/");
+    revalidatePath(`/book/${result.canonicalBookId}`);
+    revalidatePath(`/connections/${sourceId}/browse`);
+    revalidatePath("/aliases");
+    return { success: true, result };
+  } catch (caught) {
+    const message = caught instanceof Error ? caught.message : "Failed to import book.";
+    return { success: false, error: message };
   }
 }

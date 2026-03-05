@@ -15,9 +15,11 @@ const customStyles = {
 
 interface EpubReaderProps {
   url: string;
-  location?: string | number;
+  location?: string | number | null;
   locationChanged?: (loc: string | number) => void;
   title?: string;
+  theme?: "light" | "dark" | "sepia";
+  fontSize?: number;
 }
 
 export function EpubReader({ url, location, locationChanged, title }: EpubReaderProps) {
@@ -34,7 +36,7 @@ export function EpubReader({ url, location, locationChanged, title }: EpubReader
       <ReactReader
         url={url}
         title={title || "Book Reader"}
-        location={location}
+        location={location ?? null}
         locationChanged={(epubcifi: string) => {
              if (locationChanged) locationChanged(epubcifi);
         }}
@@ -46,7 +48,7 @@ export function EpubReader({ url, location, locationChanged, title }: EpubReader
             flow: "paginated",
             manager: "default"
         }}
-        styles={customStyles}
+        readerStyles={customStyles}
       />
       
       {/* Reader Controls Overlay */}

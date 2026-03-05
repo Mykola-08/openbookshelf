@@ -12,7 +12,7 @@ export default function AddSourcePage() {
   const [formData, setFormData] = useState({
     name: "",
     url: "",
-    type: "public_url" as const
+    type: "public_url" as "public_url" | "private_api"
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

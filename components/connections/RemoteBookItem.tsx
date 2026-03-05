@@ -26,7 +26,7 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
         setStatus('success');
       } else {
         setStatus('error');
-        setErrorMsg(result.error);
+        setErrorMsg(result.error || '');
       }
     } catch (e: any) {
       setStatus('error');

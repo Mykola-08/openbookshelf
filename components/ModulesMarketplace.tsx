@@ -1,36 +1,34 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import { BUILTIN_MODULES } from "@/lib/config/modules";
 import { useModules } from "@/lib/hooks/use-modules";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
+// Apple-like sections: large border-radius, pure white background on cards with subtle borders
 const SectionCard = ({ children, title, description, badge }: any) => (
-  <Card className="mb-8 border-border/40 shadow-none">
-    <CardHeader className="flex flex-row items-center justify-between pb-4">
-      <div className="space-y-1.5">
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+  <div className="mb-8">
+    <div className="px-4 mb-2 flex justify-between items-end">
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
+        {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
       </div>
-      {badge && <div className="text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-md font-medium">{badge}</div>}
-    </CardHeader>
-    <CardContent className="space-y-6">
+      {badge && <div className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full font-medium">{badge}</div>}
+    </div>
+    <div className="bg-card border border-border shadow-sm rounded-[1.5rem] overflow-hidden">
       {children}
-    </CardContent>
-  </Card>
+    </div>
+  </div>
 );
 
 const ListItem = ({ children, isLast, title, description, action }: any) => (
-  <div className={cn("flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4")}>
-    <div className="flex-1 space-y-1">
-      <p className="text-sm font-medium leading-none">{title}</p>
-      {description && <p className="text-[13px] text-muted-foreground">{description}</p>}
+  <div className={cn("p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4", !isLast && "border-b border-border/50")}>
+    <div className="flex-1">
+      <div className="font-medium text-[15px]">{title}</div>
+      {description && <div className="text-[13px] text-muted-foreground mt-0.5 leading-snug">{description}</div>}
       {children && <div className="mt-3">{children}</div>}
     </div>
     {action && <div className="shrink-0">{action}</div>}
@@ -58,7 +56,6 @@ export function ModulesMarketplace() {
 
   return (
     <main className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 min-h-screen">
-      <Link href="/settings" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"><ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Settings</Link>
       <div className="space-y-1 mb-8 px-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Modules Marketplace</h1>
         <p className="text-muted-foreground text-[15px]">
@@ -78,7 +75,7 @@ export function ModulesMarketplace() {
               title={
                 <div className="flex items-center gap-2">
                   <span>{module.title}</span>
-                  <span className="text-[10px] uppercase tracking-wider bg-muted text-muted-foreground px-1.5 py-0.5 rounded-md">{module.category}</span>
+                  <span className="text-[10px] uppercase tracking-wider bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">{module.category}</span>
                 </div>
               }
               description={module.description}
@@ -99,19 +96,19 @@ export function ModulesMarketplace() {
         description="Add your own custom feature flags and integrations."
       >
         <div className="p-4 flex flex-col sm:flex-row gap-3 border-b border-border/50 bg-muted/10">
-          <Input
+          <input
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="Module name"
-            className="flex-1"
+            className="flex-1 h-10 rounded-xl border border-input bg-background px-4 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
           />
-          <Input
+          <input
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Module description"
-            className="flex-1"
+            className="flex-1 h-10 rounded-xl border border-input bg-background px-4 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
           />
-          <Button type="button" onClick={addCustomModule} className=" h-10 px-6">
+          <Button type="button" onClick={addCustomModule} className="rounded-xl h-10 px-6">
             <Plus className="w-4 h-4 mr-1.5" /> Add
           </Button>
         </div>
@@ -135,7 +132,7 @@ export function ModulesMarketplace() {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-md w-8 h-8"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full w-8 h-8"
                       onClick={() => removeCustomModule(module.id)}
                     >
                       <Trash2 className="w-4 h-4" />

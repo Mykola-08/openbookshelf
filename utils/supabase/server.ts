@@ -1,8 +1,15 @@
 // Supabase Server Client Utility
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { createDemoSupabaseClient, isDemoSupabaseEnabled } from './demo-client'
+
+type ServerSupabaseClient = ReturnType<typeof createServerClient>;
 
 export async function createClient() {
+  if (isDemoSupabaseEnabled()) {
+    return createDemoSupabaseClient() as unknown as ServerSupabaseClient
+  }
+
   const cookieStore = await cookies()
 
   return createServerClient(
