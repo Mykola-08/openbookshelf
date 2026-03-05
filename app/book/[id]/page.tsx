@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MODULE_COOKIE_NAME, parseModuleState } from "@/lib/config/modules";
 import { GenerateDescriptionButton, GenerateChapterSummaryButton } from "@/components/AIGenerateButtons";
 import { CommunityBookSection } from "@/components/CommunityBookSection";
+import { QuickActionsBar } from "@/components/QuickActionsBar";
 
 type SearchParamValue = string | string[] | undefined;
 

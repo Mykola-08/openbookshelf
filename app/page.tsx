@@ -3,6 +3,7 @@ import { User, Library, Filter, Layers, LayoutGrid, List, ArrowDownWideNarrow } 
 import { createClient } from "@/utils/supabase/server";
 import BookCard from "@/components/BookCard";
 import { EmptyState } from "@/components/ui/empty-state";
+import MatchingInbox from "@/components/MatchingInbox";
 
 export const dynamic = 'force-dynamic';
 
@@ -40,15 +41,33 @@ export default async function Home(props: {
   const { data: userBooks, error } = await query;
   let booksToDisplay = userBooks || [];
 
+  const { data: pendingSources } = await supabase
+    .from('source_items')
+    .select('*, user_sources(*)')
+    .in('sync_state', ['pending_create', 'conflict'])
+    .limit(10);
+    
+  const pendingInboxItems = (pendingSources || []).map(item => ({
+    id: item.id,
+    sourceBook: {
+      title: item.last_synced_data?.title || item.remote_id,
+      author: item.last_synced_data?.author || "Unknown",
+      cover: item.last_synced_data?.cover_url,
+      sourceName: item.user_sources?.name || 'Unknown Source'
+    },
+    confidence: item.sync_state === 'conflict' ? 50 : 90
+  }));
+
+
   // Client-side JS sorting for nested fields (title, author)
   if (sortOption === 'title') {
-    booksToDisplay.sort((a, b) => {
+    booksToDisplay.sort((a: any, b: any) => {
       const titleA = a.books?.title || '';
       const titleB = b.books?.title || '';
       return titleA.localeCompare(titleB);
     });
   } else if (sortOption === 'author') {
-    booksToDisplay.sort((a, b) => {
+    booksToDisplay.sort((a: any, b: any) => {
       const authorA = a.books?.authors?.[0]?.name || '';
       const authorB = b.books?.authors?.[0]?.name || '';
       return authorA.localeCompare(authorB);
@@ -123,6 +142,8 @@ export default async function Home(props: {
                </Link>
             </div>
           </div>
+
+          {pendingInboxItems.length > 0 && <MatchingInbox pendingMatches={pendingInboxItems} />}
 
           {!booksToDisplay.length ? (
             <EmptyState 

@@ -83,15 +83,15 @@ Create a complete UX/UI execution plan that covers:
 ## Phase 2: Screen-by-Screen UX TODO Backlog
 
 ### Home / Library (`/`)
-- [ ] Real filters: status, rating, source, shelf, language, format.
-- [ ] Sort controls: recent, title, author, progress, rating.
-- [ ] Persist filter/sort state in URL query params.
-- [ ] Add grid/list/dense view toggle.
+- [x] Real filters: status, rating, source, shelf, language, format.
+- [x] Sort controls: recent, title, author, progress, rating.
+- [x] Persist filter/sort state in URL query params.
+- [x] Add grid/list/dense view toggle.
 - [ ] Add bulk selection and bulk actions (status move, shelf assign, delete).
 - [ ] Add quick-add book modal (manual + ISBN + OPDS URL).
 - [ ] Replace mock inbox with real pending import/merge queue.
 - [ ] Add undo for destructive actions.
-- [ ] Add proper empty-state onboarding for first-time users.
+- [x] Add proper empty-state onboarding for first-time users.
 
 ### Book Detail (`/book/[id]`)
 - [ ] Replace mock-only details with full DB data.
@@ -435,7 +435,7 @@ Create a complete UX/UI execution plan that covers:
 - [x] Ship global toasts, error states, and working search results route.
 
 ### Sprint 2 (1-2 weeks)
-- [ ] Deliver home/library filters + sorting + URL persistence.
+- [x] Deliver home/library filters + sorting + URL persistence.
 - [ ] Deliver book details data correctness and working alias votes.
 
 ### Sprint 3 (1-2 weeks)
