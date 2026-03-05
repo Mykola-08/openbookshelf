@@ -21,53 +21,54 @@ export default function BookCard({ book, source }: BookCardProps) {
   };
 
   return (
-    <div className="relative group bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <div className="aspect-[2/3] bg-gray-100 relative">
+    <div className="relative group bg-card border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+      <div className="aspect-[2/3] bg-muted relative">
         {book.coverUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img 
             src={book.coverUrl} 
             alt={book.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-400">
+          <div className="flex items-center justify-center h-full text-muted-foreground/50 text-sm font-medium">
             No Cover
           </div>
         )}
         
-        {/* Status Overlay on hover or always? Let's keep it visible per design usually */}
-        <div className="absolute top-2 right-2">
+        {/* Status Overlay */}
+        <div className="absolute top-2 right-2 flex flex-col gap-1.5 items-end">
           {source && <SourceBadge source={source} />}
         </div>
-        <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur rounded px-1.5 py-1 text-xs shadow-sm flex items-center justify-center">
+        <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-md rounded-full p-1.5 shadow-sm text-foreground">
            <SyncIcon />
         </div>
       </div>
       
-      <div className="p-3">
-        <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight mb-1" title={book.title}>
+      <div className="p-3.5">
+        <h3 className="font-medium text-foreground line-clamp-2 text-sm leading-snug mb-1" title={book.title}>
           {book.title}
         </h3>
-        <p className="text-gray-500 text-xs mb-2 truncate">
+        <p className="text-muted-foreground text-xs mb-3 truncate">
           {book.authors.join(", ")}
         </p>
         
         <div className="flex items-center justify-between mt-auto">
           <StatusPill status={book.status.toLowerCase()} />
           {book.rating ? (
-             <div className="flex items-center gap-0.5">
-               <span className="text-xs font-medium text-gray-600">{book.rating}</span>
-               <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+             <div className="flex items-center gap-1 bg-muted/50 px-1.5 py-0.5 rounded-md">
+               <span className="text-xs font-semibold text-foreground">{book.rating}</span>
+               <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
              </div>
           ) : null}
         </div>
 
         {/* Progress bar if reading */}
         {book.status === 'reading' && book.progress !== undefined && (
-          <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5">
+          <div className="mt-3 w-full bg-secondary rounded-full h-1.5 overflow-hidden">
             <div 
-              className="bg-blue-500 h-1.5 rounded-full" 
+              className="bg-primary h-full rounded-full transition-all duration-300" 
               style={{ width: `${Math.min(book.progress, 100)}%` }}
             ></div>
           </div>

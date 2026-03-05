@@ -26,59 +26,74 @@ export default async function TrackerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-[family-name:var(--font-geist-sans)]">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-10">
         
-        <div className="flex items-center justify-between mb-8">
-           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-             <BookOpen className="w-8 h-8 text-blue-600" />
-             My Reading Progress
-           </h1>
-           <div className="text-sm text-gray-500">
-              Total Tracked: {userBooks?.length || 0}
+        <div className="flex items-end justify-between border-b pb-6">
+           <div className="space-y-1">
+             <h1 className="text-3xl font-semibold tracking-tight">
+               Reading Progress
+             </h1>
+             <p className="text-muted-foreground text-sm">
+               Track and organize what you are reading
+             </p>
+           </div>
+           <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 py-1.5 px-3 rounded-full">
+              <BookOpen className="w-4 h-4" />
+              <span>{userBooks?.length || 0} Total</span>
            </div>
         </div>
 
         {/* Kanban Board Style Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {columns.map((col) => (
-            <div key={col.id} className="flex flex-col space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+            <div key={col.id} className="flex flex-col space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="font-medium text-foreground flex items-center gap-2">
                   {col.icon} {col.label}
                 </h2>
-                <Badge variant="secondary">{col.items.length}</Badge>
+                <Badge variant="secondary" className="rounded-full px-2">{col.items.length}</Badge>
               </div>
 
               <div className="space-y-3 flex-1">
                 {col.items.length === 0 ? (
-                   <div className="text-center p-8 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-gray-400 text-sm">
-                      No books here.
+                   <div className="flex flex-col items-center justify-center p-8 bg-muted/30 rounded-xl border border-dashed text-muted-foreground text-sm">
+                      <Bookmark className="w-6 h-6 mb-2 opacity-20" />
+                      No books here
                    </div>
                 ) : (
                   col.items.map((ub: any) => {
                     const book = ub.books;
                     const primaryAuthor = book?.authors?.[0]?.name || 'Unknown Author';
                     return (
-                      <Card key={ub.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                        <CardContent className="p-0 flex h-24">
-                          <div className="w-16 bg-gray-200 shrink-0">
-                            {/* Note: In a real environment, replace with Cover Image */}
-                          </div>
-                          <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
-                             <Link href={`/book/${book?.id}`} className="font-medium text-sm text-gray-900 truncate hover:text-blue-600 transition-colors">
-                                {book?.title || 'Unknown Title'}
-                             </Link>
-                             <p className="text-xs text-gray-500 truncate">{primaryAuthor}</p>
-                             
-                             {col.id === 'reading' && ub.reading_location && (
-                                <div className="mt-2 text-[10px] uppercase font-bold text-orange-600 tracking-wider flex items-center gap-1">
-                                   <Flame className="w-3 h-3" /> In Progress
+                      <Link key={ub.id} href={`/book/${book?.id}`} className="group block">
+                        <div className="relative overflow-hidden rounded-xl border bg-card/50 p-4 transition-all hover:bg-card hover:shadow-sm">
+                          <div className="flex gap-4">
+                            <div className="h-20 w-14 overflow-hidden rounded-md bg-muted shrink-0 shadow-sm">
+                              {book?.cover_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={book.cover_url} alt={book.title} className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="h-full w-full bg-muted flex items-center justify-center">
+                                  <BookOpen className="w-5 h-5 text-muted-foreground/30" />
                                 </div>
-                             )}
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
+                               <h3 className="font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                                  {book?.title || 'Unknown Title'}
+                               </h3>
+                               <p className="text-sm text-muted-foreground truncate mt-0.5">{primaryAuthor}</p>
+                               
+                               {col.id === 'reading' && ub.reading_location && (
+                                  <div className="mt-2 text-[10px] uppercase font-bold text-orange-500 tracking-wider flex items-center gap-1.5 opacity-80">
+                                     <Flame className="w-3 h-3" /> In Progress
+                                  </div>
+                               )}
+                            </div>
                           </div>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </Link>
                     );
                   })
                 )}

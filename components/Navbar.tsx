@@ -37,7 +37,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-md border-b border-border z-50 flex flex-col shadow-sm">
+    <header className="sticky top-0 left-0 right-0 bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-md border-b border-border z-50 flex flex-col shadow-sm">
       
       {/* Top Row: Logo, Search, Profile */}
       <div className="flex items-center justify-between h-14 px-4 md:px-8 w-full gap-4 max-w-7xl mx-auto">

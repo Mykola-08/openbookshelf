@@ -150,43 +150,44 @@ export default async function BookDetailsPage({
           </Button>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex flex-col md:flex-row gap-10 items-start">
            {/* Cover Column */}
-           <div className="w-full md:w-1/3 max-w-[300px] shrink-0">
-             <div className="aspect-[2/3] panel-surface rounded-lg shadow-md overflow-hidden relative">
+           <div className="w-full md:w-1/3 max-w-[280px] shrink-0 mx-auto md:mx-0">
+             <div className="aspect-[2/3] bg-muted rounded-xl shadow-lg border border-border/50 overflow-hidden relative">
                {book.cover_url ? (
+                 // eslint-disable-next-line @next/next/no-img-element
                  <img src={book.cover_url} alt={book.title} className="w-full h-full object-cover" />
                ) : (
-                 <div className="w-full h-full flex items-center justify-center bg-[var(--surface)] text-muted-ui">
-                   <BookOpen className="w-16 h-16" />
+                 <div className="w-full h-full flex flex-col items-center justify-center bg-card text-muted-foreground">
+                   <BookOpen className="w-12 h-12 mb-2 opacity-20" />
                  </div>
                )}
              </div>
 
              <div className="mt-6 flex flex-col gap-3">
                 {file ? (
-                  <Button className="w-full" size="lg" asChild>
+                  <Button className="w-full rounded-full" size="lg" asChild>
                     <Link href={`/read/${book.id}`}>
                       <BookOpen className="w-4 h-4 mr-2" />
                       {userBook?.reading_location ? "Continue Reading" : userBook?.progress > 0 ? `Continue Reading (${userBook.progress}%)` : 'Start Reading'}
                     </Link>
                   </Button>
                 ) : (
-                  <Button className="w-full" size="lg" disabled variant="secondary">
+                  <Button className="w-full rounded-full" size="lg" disabled variant="secondary">
                     No File Available
                   </Button>
                 )}
                 
                 {userBook && (
-                  <div className="w-full mt-2">
-                     <div className="flex justify-between text-sm mb-1">
-                        <span className="text-muted-ui">Status</span>
-                        <span className="font-medium capitalize text-strong-ui">{userBook.status}</span>
+                  <div className="w-full mt-4 bg-muted/30 p-4 rounded-xl border">
+                     <div className="flex justify-between text-sm mb-2">
+                        <span className="text-muted-foreground">Status</span>
+                        <span className="font-medium capitalize text-foreground">{userBook.status}</span>
                      </div>
                      {userBook.status === "reading" && userBook.progress !== null && userBook.progress !== undefined && (
                        <div className="flex justify-between text-sm">
-                         <span className="text-muted-ui">Progress</span>
-                         <span className="font-medium text-strong-ui">{userBook.progress}%</span>
+                         <span className="text-muted-foreground">Progress</span>
+                         <span className="font-medium text-foreground">{userBook.progress}%</span>
                        </div>
                      )}
                   </div>
@@ -195,21 +196,21 @@ export default async function BookDetailsPage({
            </div>
 
            {/* Details Column */}
-           <div className="flex-1 w-full">
+           <div className="flex-1 w-full mt-4 md:mt-0">
               {seriesInfo && (
-                <Link href={`/series/${seriesInfo.series.slug || seriesInfo.series.id}`} className="text-[var(--brand)] font-medium text-sm hover:underline mb-2 block">
+                <Link href={`/series/${seriesInfo.series.slug || seriesInfo.series.id}`} className="text-primary font-medium text-sm hover:underline mb-2 block">
                   {seriesInfo.series.name} {seriesInfo.volume_number ? `#${seriesInfo.volume_number}` : ''}
                 </Link>
               )}
               
-              <h1 className="text-4xl font-bold text-strong-ui tracking-tight leading-tight mb-2">
+              <h1 className="text-4xl md:text-5xl font-semibold text-foreground tracking-tight leading-tight mb-3">
                 {book.title}
               </h1>
               
-              <div className="text-xl text-muted-ui mb-6 flex flex-wrap items-center gap-2">
+              <div className="text-lg md:text-xl text-muted-foreground mb-6 flex flex-wrap items-center gap-2">
                 {authors.map((author, i) => (
                   <span key={author.id}>
-                    <Link href={`/authors/${author.slug || author.id}`} className="hover:text-[var(--brand)] hover:underline transition-colors">
+                    <Link href={`/authors/${author.slug || author.id}`} className="hover:text-primary hover:underline transition-colors">
                       {author.name}
                     </Link>
                     {i < authors.length - 1 && ", "}
@@ -217,64 +218,70 @@ export default async function BookDetailsPage({
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex flex-wrap gap-3 mb-8">
                  {book.published_year && (
-                   <div className="flex items-center gap-1.5 text-sm text-muted-ui panel-surface px-3 py-1.5 rounded-full">
-                     <Calendar className="w-4 h-4" />
+                   <div className="flex items-center gap-1.5 text-sm text-foreground bg-secondary px-3 py-1 rounded-full">
+                     <Calendar className="w-4 h-4 text-muted-foreground" />
                      {book.published_year}
                    </div>
                  )}
                  {file && (
-                    <div className="flex items-center gap-1.5 text-sm text-muted-ui panel-surface px-3 py-1.5 rounded-full font-mono uppercase">
-                      <Check className="w-4 h-4 text-[var(--brand)]" />
+                    <div className="flex items-center gap-1.5 text-sm text-foreground bg-secondary px-3 py-1 rounded-full font-mono uppercase">
+                      <Check className="w-4 h-4 text-primary" />
                       {file.format}
                     </div>
                  )}
               </div>
 
-              <div className="space-y-6">
-                 <div>
-                   <div className="flex items-center justify-between mb-2">
-                     <h3 className="font-semibold text-strong-ui text-lg">Description</h3>
+              <div className="space-y-8">
+                 <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-muted-foreground leading-relaxed">
+                   <div className="flex items-center justify-between mb-4 not-prose border-b pb-2">
+                     <h3 className="font-medium text-foreground text-lg">Description</h3>
                      {!book.description && aiGenerationEnabled && <GenerateDescriptionButton bookId={book.id} />}
                    </div>
                    <div 
-                     className="text-muted-ui leading-relaxed max-w-none prose prose-sm"
-                     dangerouslySetInnerHTML={{ __html: book.description || '<p className="text-muted-ui italic">No description available.</p>' }}
+                     dangerouslySetInnerHTML={{ __html: book.description || '<p className="italic opacity-70">No description available.</p>' }}
                    />
                  </div>
 
                  {bookSummaryEnabled && (
-                   <Card className="panel-surface">
-                     <CardContent className="p-5 space-y-2">
-                       <h3 className="font-semibold text-strong-ui text-lg">Book Summary</h3>
-                       <p className="text-sm text-muted-ui leading-relaxed">{generatedSummary}</p>
+                   <Card className="bg-muted/20 border-none shadow-none">
+                     <CardContent className="p-6">
+                       <h3 className="font-medium text-foreground text-lg mb-3">Book Summary</h3>
+                       <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{generatedSummary}</p>
                      </CardContent>
                    </Card>
                  )}
 
                  {aliasResolutionEnabled && (
-                   <Card className="panel-surface">
-                     <CardContent className="p-5 space-y-3">
-                       <h3 className="font-semibold text-strong-ui text-lg">Aliases</h3>
+                   <Card className="bg-muted/20 border-none shadow-none">
+                     <CardContent className="p-6 space-y-4">
+                       <h3 className="font-medium text-foreground text-lg border-b pb-2">Aliases</h3>
                        {aliases.length === 0 ? (
-                         <p className="text-sm text-muted-ui">
+                         <p className="text-sm text-muted-foreground italic">
                            No aliases recorded yet. Imports with alternate titles will appear here.
                          </p>
                        ) : (
-                         <div className="space-y-2">
+                         <div className="space-y-3">
                            {aliases.map((alias) => (
-                             <div key={alias.id} className="panel-surface px-3 py-2 rounded-md">
-                               <div className="flex items-center justify-between gap-3">
-                                 <div>
-                                   <p className="font-medium text-sm text-strong-ui">{alias.alias_title}</p>
-                                   <p className="text-xs text-muted-ui">
-                                     Source: {alias.origin_source_name || "unknown"} | Votes {alias.yes_votes}/{alias.no_votes}
-                                   </p>
+                             <div key={alias.id} className="bg-background border px-4 py-3 rounded-xl transition-colors hover:bg-muted/50">
+                               <div className="flex items-center justify-between gap-4">
+                                 <div className="min-w-0 flex-1">
+                                   <p className="font-medium text-sm text-foreground truncate">{alias.alias_title}</p>
+                                   <div className="flex items-center gap-3 mt-1">
+                                     <p className="text-xs text-muted-foreground truncate">
+                                       Source: {alias.origin_source_name || "unknown"}
+                                     </p>
+                                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                        <span className="text-emerald-500 font-medium">↑{alias.yes_votes}</span>
+                                        <span>•</span>
+                                        <span className="text-rose-500 font-medium">↓{alias.no_votes}</span>
+                                     </div>
+                                   </div>
                                  </div>
-                                 <div className="text-xs text-muted-ui capitalize">
-                                   {alias.status}
-                                   {alias.is_default ? " • default" : ""}
+                                 <div className="text-xs font-medium text-muted-foreground capitalize flex flex-col items-end gap-1">
+                                   <span className="bg-secondary px-2 py-0.5 rounded-full">{alias.status}</span>
+                                   {alias.is_default && <span className="text-primary text-[10px] uppercase tracking-wider">Default</span>}
                                  </div>
                                </div>
                              </div>
@@ -285,64 +292,68 @@ export default async function BookDetailsPage({
                    </Card>
                  )}
 
-                 <Card className="panel-surface">
-                   <CardContent className="p-5">
-                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                       <h3 className="font-semibold text-strong-ui text-lg flex items-center gap-2">
-                         <ListOrdered className="w-5 h-5 text-muted-ui" />
+                 <Card className="bg-muted/20 border-none shadow-none">
+                   <CardContent className="p-6">
+                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b pb-4">
+                       <h3 className="font-medium text-foreground text-lg flex items-center gap-2">
+                         <ListOrdered className="w-5 h-5 text-muted-foreground" />
                          Chapters
                        </h3>
-                       <div className="flex items-center gap-2">
-                         <Button size="sm" variant={chapterOrder === "newest" ? "default" : "outline"} asChild>
-                           <Link href={`/book/${id}`}>Newest first</Link>
+                       <div className="flex items-center bg-background border p-1 rounded-lg">
+                         <Button size="sm" variant={chapterOrder === "newest" ? "default" : "ghost"} asChild className="rounded-md">
+                           <Link href={`/book/${id}`}>Newest</Link>
                          </Button>
-                         <Button size="sm" variant={chapterOrder === "oldest" ? "default" : "outline"} asChild>
-                           <Link href={`/book/${id}?order=oldest`}>Oldest first</Link>
+                         <Button size="sm" variant={chapterOrder === "oldest" ? "default" : "ghost"} asChild className="rounded-md">
+                           <Link href={`/book/${id}?order=oldest`}>Oldest</Link>
                          </Button>
                        </div>
                      </div>
 
                      {chapters.length === 0 ? (
-                       <div className="text-sm text-muted-ui panel-surface border-dashed rounded-md p-4">
-                         No chapter index is available yet for this book.
+                       <div className="flex flex-col items-center justify-center py-10 bg-background border border-dashed border-border/50 rounded-xl">
+                          <ListOrdered className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                          <p className="text-sm text-muted-foreground">No chapters available</p>
                        </div>
                      ) : (
-                       <div className="space-y-2">
+                       <div className="space-y-3">
                          {chapters.map((chapter) => (
-                           <div key={chapter.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-md panel-surface px-3 py-2">
-                             <div className="min-w-0">
-                               <div className="font-medium text-sm text-strong-ui truncate">
-                                 {chapter.chapter_number ? `Chapter ${chapter.chapter_number}: ` : ""}
-                                 {chapter.title || "Untitled Chapter"}
-                               </div>
-                               <div className="text-xs text-muted-ui mt-0.5 flex items-center gap-3">
-                                 {chapter.published_at ? (
-                                   <span>{new Date(chapter.published_at).toLocaleDateString()}</span>
-                                 ) : null}
-                                 {chapter.word_count ? (
-                                   <span>{chapter.word_count.toLocaleString()} words</span>
-                                 ) : null}
-                               </div>
-                               {chapterSummaryEnabled && (
-                                 <div className="mt-2 mb-1">
-                                   <p className="text-sm text-muted-foreground">
-                                     {chapter.summary || "No summary available for this chapter."}
-                                   </p>
-                                   {!chapter.summary && aiGenerationEnabled && (
-                                     <GenerateChapterSummaryButton 
-                                       bookId={book.id} 
-                                       chapterId={chapter.id} 
-                                       chapterTitle={chapter.title || "Chapter " + (chapter.chapter_number || "")} 
-                                     />
-                                   )}
+                           <div key={chapter.id} className="border bg-background rounded-xl p-4 transition-colors hover:border-primary/30 shadow-sm">
+                             <div className="flex items-start justify-between gap-4">
+                               <div className="min-w-0">
+                                 <h4 className="font-medium text-foreground tracking-tight line-clamp-1">
+                                    {chapter.title || `Chapter ${chapter.chapter_number}`}
+                                 </h4>
+                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-muted-foreground">
+                                    {chapter.chapter_number && <span>Ch. {chapter.chapter_number}</span>}
+                                    {chapter.word_count && <span>{chapter.word_count.toLocaleString()} words</span>}
+                                    {chapter.published_at && <span>{new Date(chapter.published_at).toLocaleDateString()}</span>}
                                  </div>
+                                 
+                                 {chapterSummaryEnabled && (
+                                   <div className="mt-3">
+                                     {chapter.summary ? (
+                                        <div className="text-sm text-muted-foreground leading-relaxed bg-muted/30 p-3 rounded-lg border border-border/40">
+                                          {chapter.summary}
+                                        </div>
+                                     ) : (
+                                       aiGenerationEnabled && (
+                                         <GenerateChapterSummaryButton 
+                                           bookId={book.id} 
+                                           chapterId={chapter.id} 
+                                           chapterTitle={chapter.title || "Chapter " + (chapter.chapter_number || "")} 
+                                         />
+                                       )
+                                     )}
+                                   </div>
+                                 )}
+                               </div>
+                               
+                               {chapter.chapter_url && (
+                                 <Button size="sm" variant="ghost" asChild className="shrink-0 text-primary hover:text-primary hover:bg-primary/10 mt-1">
+                                   <Link href={chapter.chapter_url} target="_blank">Open</Link>
+                                 </Button>
                                )}
                              </div>
-                             {chapter.chapter_url ? (
-                               <Button size="sm" variant="outline" asChild className="mt-2 sm:mt-0">
-                                 <Link href={chapter.chapter_url}>Open</Link>
-                               </Button>
-                             ) : null}
                            </div>
                          ))}
                        </div>

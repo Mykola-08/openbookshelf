@@ -14,14 +14,17 @@ export default async function ConnectionsPage() {
   const hasSources = userSources && userSources.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
-      <main className="p-4 md:p-8 max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2 tracking-tight">
-             <Cloud className="w-8 h-8 text-blue-600" />
-             Connections
-           </h1>
-           <Button asChild>
+    <div className="min-h-screen bg-background">
+      <main className="p-4 md:p-8 max-w-5xl mx-auto space-y-10">
+        <div className="flex items-end justify-between border-b pb-6">
+           <div className="space-y-1">
+             <h1 className="text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+               <Cloud className="w-8 h-8 text-primary" />
+               Connections
+             </h1>
+             <p className="text-sm text-muted-foreground">Manage your connected OPDS catalogs and external sources</p>
+           </div>
+           <Button asChild className="rounded-full">
              <Link href="/connections/add" className="flex items-center gap-2">
                <Plus className="w-4 h-4" />
                Add Source
@@ -29,56 +32,56 @@ export default async function ConnectionsPage() {
            </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {!hasSources ? (
-            <div className="col-span-1 md:col-span-2 text-center py-16 bg-white rounded-lg border border-dashed border-gray-300">
-               <Cloud className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-               <p className="text-gray-500 mb-4">No sources connected yet.</p>
-               <Button variant="outline" asChild>
-                  <Link href="/connections/add">Add your first library source</Link>
+            <div className="col-span-1 md:col-span-2 text-center py-20 bg-muted/20 rounded-2xl border border-dashed text-muted-foreground">
+               <Cloud className="w-12 h-12 mx-auto mb-4 opacity-20" />
+               <p className="mb-6 font-medium">No sources connected yet</p>
+               <Button variant="outline" asChild className="rounded-full">
+                  <Link href="/connections/add">Connect your first library</Link>
                </Button>
             </div>
           ) : (
             userSources.map((source: any) => (
-            <Card key={source.id} className="group hover:shadow-md transition-all">
-              <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-gray-50 rounded-md border border-gray-100 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+            <Card key={source.id} className="group hover:shadow-md transition-all rounded-2xl border-border/60 bg-card overflow-hidden">
+              <CardHeader className="pb-4 pt-5 px-5 flex flex-row items-start justify-between space-y-0 relative border-b border-border/40 bg-muted/10">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="p-3 bg-background rounded-xl border group-hover:border-primary/30 group-hover:text-primary transition-colors shadow-sm shrink-0">
                     {source.type === 'public_url' ? <Globe className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">{source.name}</CardTitle>
-                    <CardDescription className="font-mono text-xs mt-1 max-w-[200px] truncate">
+                  <div className="min-w-0 pr-4">
+                    <CardTitle className="text-lg font-medium truncate">{source.name}</CardTitle>
+                    <CardDescription className="font-mono text-[11px] mt-1 truncate">
                       {(source.config as any)?.url || source.type}
                     </CardDescription>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <Badge variant={source.trust_level === 'high' ? 'default' : 'secondary'} className="uppercase">
+                <div className="absolute top-5 right-5">
+                  <Badge variant={source.trust_level === 'high' ? 'default' : 'secondary'} className="uppercase text-[10px] tracking-wider rounded-full px-2">
                     {source.trust_level} Trust
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="pb-4">
-                 <div className="grid grid-cols-2 gap-4 text-xs text-gray-600 bg-gray-50 p-3 rounded-md border border-gray-100">
+              <CardContent className="py-5 px-5">
+                 <div className="flex items-center justify-between text-sm text-foreground bg-secondary/60 p-3 rounded-xl border border-border/50">
                     <div>
-                      <span className="block text-gray-400 mb-0.5">Sync Mode</span>
-                      <span className="font-medium capitalize flex items-center gap-1">
-                        <ArrowRightLeft className="w-3 h-3" />
+                      <span className="block text-muted-foreground text-xs mb-0.5">Sync Mode</span>
+                      <span className="font-medium capitalize flex items-center gap-1.5">
+                        <ArrowRightLeft className="w-3.5 h-3.5 text-primary" />
                         {source.sync_mode.replace('_', ' ')}
                       </span>
                     </div>
                  </div>
               </CardContent>
-              <CardFooter className="pt-0 flex justify-between">
-                 <Button variant="secondary" size="sm" asChild>
+              <CardFooter className="px-5 pb-5 pt-0 flex justify-between gap-3">
+                 <Button variant="secondary" className="flex-1 rounded-xl" asChild>
                    <Link href={`/connections/${source.id}/browse`}>
                      Browse Catalog
                    </Link>
                  </Button>
-                 <Button variant="ghost" size="icon" asChild>
-                   <Link href={`/connections/${source.id}`} className="text-gray-400 hover:text-gray-900">
-                     <Settings className="w-4 h-4" />
+                 <Button variant="outline" size="icon" className="rounded-xl shrink-0 border-border/60" asChild>
+                   <Link href={`/connections/${source.id}`}>
+                     <Settings className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
                      <span className="sr-only">Settings</span>
                    </Link>
                  </Button>

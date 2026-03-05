@@ -4,9 +4,12 @@ import { useUserSettings } from "@/lib/hooks/use-user-settings";
 
 export function DemoModeBanner({ reason }: { reason?: string }) {
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs py-1.5 px-4 text-center font-medium fixed top-0 w-full z-[100] flex justify-center items-center gap-2 shadow-sm">
-      <span className="flex h-2 w-2 rounded-full bg-blue-300 animate-pulse"></span>
-      Demo Mode is Active — Data syncs locally
+    <div 
+      className="fixed bottom-4 right-4 z-[100] flex items-center gap-2 bg-background/80 backdrop-blur-md border border-border/50 text-muted-foreground text-[10px] py-1 px-3 rounded-full shadow-sm hover:text-foreground transition-colors cursor-help"
+      title={reason ? `Demo Mode Active: ${reason}` : "Demo Mode Active"}
+    >
+      <span className="flex h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+      Demo Mode
     </div>
   );
 }

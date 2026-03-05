@@ -58,12 +58,12 @@ export default function RootLayout({
       >
         <AppThemeRuntime />
         <Navbar />
-        {demoModeActive && <DemoModeBanner reason={demoModeReason} />}
         <OnboardingDialog />
-        {/* Main padding to account for fixed two-tier navbar */}
-        <div className={`${demoModeActive ? "pt-[8.5rem]" : "pt-[6.5rem]"} flex-1 flex flex-col motion-page-enter`}>
+        {/* Main wrapper */}
+        <div className="flex-1 flex flex-col motion-page-enter">
           {children}
         </div>
+        {demoModeActive && <DemoModeBanner reason={demoModeReason} />}
       </body>
     </html>
   );

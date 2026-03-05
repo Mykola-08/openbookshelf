@@ -17,6 +17,10 @@ export interface UserSettings {
   aliasVoteQuorum: number;
   askBeforeAliasMerge: boolean;
   quickImportMode: QuickImportMode;
+  // Reader specifics
+  fontSize: number;
+  fontFamily: "sans" | "serif" | "mono";
+  lineHeight: number;
 }
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
@@ -32,6 +36,10 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   aliasVoteQuorum: 3,
   askBeforeAliasMerge: true,
   quickImportMode: "ask",
+  // Reader specifics
+  fontSize: 16,
+  fontFamily: "serif",
+  lineHeight: 1.5,
 };
 
 export const USER_SETTINGS_STORAGE_KEY = "obs.settings.v2";
@@ -76,6 +84,9 @@ export const normalizeUserSettings = (
         ? source.askBeforeAliasMerge
         : DEFAULT_USER_SETTINGS.askBeforeAliasMerge,
     theme: source.theme === "light" || source.theme === "dark" || source.theme === "system" ? source.theme : DEFAULT_USER_SETTINGS.theme,
+    fontSize: clamp(Number(source.fontSize ?? DEFAULT_USER_SETTINGS.fontSize), 12, 32),
+    lineHeight: clamp(Number(source.lineHeight ?? DEFAULT_USER_SETTINGS.lineHeight), 1.0, 2.5),
+    fontFamily: source.fontFamily === "sans" || source.fontFamily === "serif" || source.fontFamily === "mono" ? source.fontFamily : DEFAULT_USER_SETTINGS.fontFamily,
   };
 };
 
