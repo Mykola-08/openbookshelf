@@ -60,6 +60,14 @@
   --reader-dark-fg: #e5e7eb;
   --reader-dark-link: #60a5fa;
   --reader-dark-border: rgba(255, 255, 255, 0.14);
+
+  /* Reader UI primitives */
+  --reader-bg: var(--reader-light-bg);
+  --reader-fg: var(--reader-light-fg);
+  --reader-border: var(--reader-light-border);
+  --reader-accent: #f1f5f9;
+  --reader-accent-fg: #0f172a;
+
   --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -92,9 +100,32 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
+  /* Semantic status colors */
+  --status-info: oklch(0.623 0.214 259.815);
+  --status-info-foreground: oklch(0.985 0 0);
+  --status-success: oklch(0.627 0.194 149.214);
+  --status-success-foreground: oklch(0.985 0 0);
+  --status-warning: oklch(0.769 0.188 70.08);
+  --status-warning-foreground: oklch(0.205 0 0);
+  --status-error: oklch(0.577 0.245 27.325);
+  --status-error-foreground: oklch(0.985 0 0);
 }
 
 @theme inline {
+  --color-reader-bg: var(--reader-bg);
+  --color-reader-fg: var(--reader-fg);
+  --color-reader-border: var(--reader-border);
+  --color-reader-accent: var(--reader-accent);
+  --color-reader-accent-fg: var(--reader-accent-fg);
+  --color-status-info: var(--status-info);
+  --color-status-info-foreground: var(--status-info-foreground);
+  --color-status-success: var(--status-success);
+  --color-status-success-foreground: var(--status-success-foreground);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-foreground: var(--status-warning-foreground);
+  --color-status-error: var(--status-error);
+  --color-status-error-foreground: var(--status-error-foreground);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -463,6 +494,16 @@ h3 {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Semantic status colors - Dark Mode */
+  --status-info: oklch(0.623 0.214 259.815);
+  --status-info-foreground: oklch(0.985 0 0);
+  --status-success: oklch(0.627 0.194 149.214);
+  --status-success-foreground: oklch(0.145 0 0);
+  --status-warning: oklch(0.769 0.188 70.08);
+  --status-warning-foreground: oklch(0.145 0 0);
+  --status-error: oklch(0.577 0.245 27.325);
+  --status-error-foreground: oklch(0.985 0 0);
 }
 
 @layer base {

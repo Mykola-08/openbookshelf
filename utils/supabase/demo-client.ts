@@ -280,6 +280,23 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
     return this;
   }
 
+  neq(column: string, value: unknown): this {
+    this.filters.push((row) => readCell(row, column) !== value);
+    return this;
+  }
+
+  is(column: string, value: unknown): this {
+    return this.eq(column, value);
+  }
+
+  in(column: string, values: unknown[]): this {
+    this.filters.push((row) => {
+      const val = readCell(row, column);
+      return values.includes(val);
+    });
+    return this;
+  }
+
   ilike(column: string, pattern: string): this {
     this.filters.push((row) => matchesIlike(readCell(row, column), pattern));
     return this;
@@ -404,9 +421,11 @@ class DemoQueryBuilder implements PromiseLike<DemoQueryResult<unknown>> {
 
     if (this.tableName === "source_items") {
       const userBooks = ensureTable(this.store, "user_books");
+      const userSources = ensureTable(this.store, "user_sources");
       return {
         ...row,
         user_books: userBooks.find((book) => book.id === row.user_book_id) || null,
+        user_sources: userSources.find((s) => s.id === row.source_id) || null,
       };
     }
 

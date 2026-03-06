@@ -56,10 +56,10 @@ export function ModulesMarketplace() {
 
   return (
     <main className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 min-h-screen">
-      <div className="space-y-1 mb-8 px-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Modules Marketplace</h1>
-        <p className="text-muted-foreground text-[15px]">
-          Enable, disable, and compose modules for your self-hosted instance.
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Modules</h1>
+        <p className="text-muted-foreground text-sm mt-0.5">
+          Enable, disable, and compose modules for your instance.
         </p>
       </div>
 

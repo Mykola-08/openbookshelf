@@ -1,15 +1,15 @@
 import re
-c = open('components/BookCard.tsx', 'r', encoding='utf-8').read()
-c = c.replace('className={${iconClass} text-green-600}', 'className={\ text-green-600}')
-c = c.replace('className={${iconClass} text-yellow-600}', 'className={\ text-yellow-600}')
-c = c.replace('className={${iconClass} text-gray-500}', 'className={\ text-gray-500}')
-c = c.replace('className={${iconClass} text-red-600}', 'className={\ text-red-600}')
-c = c.replace('className={ text-green-600}', 'className={\ text-green-600}')
-c = c.replace('className={ text-yellow-600}', 'className={\ text-yellow-600}')
-c = c.replace('className={ text-gray-500}', 'className={\ text-gray-500}')
-c = c.replace('className={ text-red-600}', 'className={\ text-red-600}')
-open('components/BookCard.tsx', 'w', encoding='utf-8').write(c)
 
-d = open('components/OnboardingDialog.tsx', 'r', encoding='utf-8').read()
-d = d.replace('setOpen(true);', 'setTimeout(() => setOpen(true), 0);')
-open('components/OnboardingDialog.tsx', 'w', encoding='utf-8').write(d)
+with open('app/settings/page.tsx', 'r', encoding='utf-8') as f:
+    text = f.read()
+
+text = text.replace(
+    '</TabsList>\\n        <div className="flex-1 min-w-0 w-full space-y-6">\\n        <div className="flex-1 min-w-0 w-full space-y-6">', 
+    '</TabsList>\\n        <div className="flex-1 min-w-0 w-full space-y-6">'
+)
+
+text = re.sub(r'</div>\\n\\s*</div>\\n\\s*</Tabs>', '</div>\\n      </Tabs>', text)
+text = re.sub(r'</TabsList>.+?<div className="flex-1 min-w-0 w-full space-y-6">', '</TabsList>\\n        <div className="flex-1 min-w-0 w-full space-y-6">', text)
+
+with open('app/settings/page.tsx', 'w', encoding='utf-8') as f:
+    f.write(text)

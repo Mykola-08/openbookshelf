@@ -83,7 +83,7 @@ export default function CommunityPage() {
         {/* Main Content Area */}
         <main className="flex-1 min-w-0">
           <div className="flex items-center gap-6 border-b border-border/50 pb-4 mb-6">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">Community</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Community</h1>
             
             <div className="flex items-center bg-muted/50 rounded-lg p-1 ml-auto">
               {settings.enableActivityFeed && (
@@ -152,7 +152,7 @@ export default function CommunityPage() {
                       )}
 
                       <div className="flex gap-4 mt-4 pt-4 border-t border-border/50">
-                        <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-red-500 transition-colors">
+                        <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors">
                           <Heart className="w-4 h-4" /> {event.likes}
                         </button>
                         <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -176,7 +176,7 @@ export default function CommunityPage() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <CardTitle className="flex items-center gap-2">
-                        <Flame className="w-5 h-5 text-orange-500" />
+                        <Flame className="w-5 h-5 text-primary" />
                         2026 Reading Challenge
                       </CardTitle>
                       <CardDescription>Your personal reading goal for the year.</CardDescription>

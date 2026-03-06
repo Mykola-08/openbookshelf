@@ -3,7 +3,7 @@ import { Server, HardDrive, BookOpen } from "lucide-react";
 
 
 const Icon = ({ type }: { type: string }) => {
-  const iconClass = "w-3 h-3 text-gray-500";
+  const iconClass = "w-3 h-3 text-muted-foreground";
   switch(type) {
     case 'calibre':
     case 'komga':
@@ -18,7 +18,7 @@ const Icon = ({ type }: { type: string }) => {
 
 export default function SourceBadge({ source }: { source: LibrarySource }) {
   return (
-    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/95 border border-gray-200 text-xs text-gray-600 font-medium shadow-sm backdrop-blur-sm">
+    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-card/95 border border-border text-xs text-muted-foreground font-medium shadow-sm backdrop-blur-sm">
       <Icon type={source.type} />
       <span className="truncate max-w-[80px]">{source.name}</span>
     </span>

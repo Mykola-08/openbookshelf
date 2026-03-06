@@ -49,8 +49,8 @@ Create a complete UX/UI execution plan that covers:
 - [ ] Ensure every page uses authenticated user-scoped queries.
 
 ### Actionability Gaps
-- [ ] Make alias vote buttons call `voteAliasAction` and update counts/status in UI.
-- [ ] Implement global search results page (current navbar search only logs to console).
+- [x] Make alias vote buttons call `voteAliasAction` and update counts/status in UI.
+- [x] Implement global search results page (current navbar search only logs to console).
 - [x] Ensure all CTA buttons do real actions or are explicitly marked disabled with explanation.
 - [x] Add error toasts and success confirmations for all write actions.
 
@@ -67,14 +67,14 @@ Create a complete UX/UI execution plan that covers:
 
 ### Visual System
 - [x] Replace hardcoded grays/blues/purples in pages with tokenized semantic colors.
-- [ ] Unify card radii, border style, shadows, spacing scale.
+- [x] Unify card radii, border style, shadows, spacing scale.
 - [x] Create consistent state components: empty/error/loading/success.
-- [ ] Add dark-mode parity pass for every route.
+- [x] Add dark-mode parity pass for every route.
 - [ ] Add visual regression snapshots for key pages.
 
 ### Forms and Feedback
 - [x] Replace `alert()` usage with accessible toast notifications.
-- [ ] Add inline validation messages and input helper text.
+- [x] Add inline validation messages and input helper text.
 - [ ] Add optimistic UI with rollback on failed mutations.
 - [x] Add autosave status label in settings (`saving`, `saved`, `error`).
 
@@ -87,75 +87,75 @@ Create a complete UX/UI execution plan that covers:
 - [x] Sort controls: recent, title, author, progress, rating.
 - [x] Persist filter/sort state in URL query params.
 - [x] Add grid/list/dense view toggle.
-- [ ] Add bulk selection and bulk actions (status move, shelf assign, delete).
-- [ ] Add quick-add book modal (manual + ISBN + OPDS URL).
+- [x] Add bulk selection and bulk actions (status move, shelf assign, delete).
+- [x] Add quick-add book modal (manual + ISBN + OPDS URL).
 - [x] Replace mock inbox with real pending import/merge queue.
-- [ ] Add undo for destructive actions.
+- [x] Add undo for destructive actions.
 - [x] Add proper empty-state onboarding for first-time users.
 
 ### Book Detail (`/book/[id]`)
-- [ ] Replace mock-only details with full DB data.
-- [ ] Add editable metadata panel (title, authors, series, tags, notes).
+- [x] Replace mock-only details with full DB data.
+- [x] Add editable metadata panel (title, authors, series, tags, notes).
 - [ ] Add genres and categories panel (multi-select with user-defined vocabularies).
 - [ ] Add emoji-assisted tags (example: `:mystery:`, `:comfort_read:`) with include/exclude filters.
-- [ ] Add chapter list with progress markers.
-- [ ] Add reading timeline/history section.
-- [ ] Add source provenance and sync diagnostics.
+- [x] Add chapter list with progress markers.
+- [x] Add reading timeline/history section.
+- [x] Add source provenance and sync diagnostics.
 - [ ] Add AI summary controls only when module enabled.
 - [ ] Add AI actions for rewrite/simplify/expand summary and spoiler-safe mode toggle.
-- [ ] Add confirm dialog before delete.
-- [ ] Add relation links (author page, series page, similar books).
-- [ ] Add book health panel (missing cover, missing description, missing genre, duplicate risk).
-- [ ] Add quick actions bar (continue, set status, rate, add tag, add note) pinned on mobile.
+- [x] Add confirm dialog before delete.
+- [x] Add relation links (author page, series page, similar books).
+- [x] Add book health panel (missing cover, missing description, missing genre, duplicate risk).
+- [x] Add quick actions bar (continue, set status, rate, add tag, add note) pinned on mobile.
 
 ### Reader (`/read/[id]` + Reader components)
-- [ ] Apply `theme` and `fontSize` props end-to-end in `EpubReader`.
-- [ ] Add font family and line-height controls.
-- [ ] Add progress HUD (chapter/page/percentage).
-- [ ] Add bookmark and highlight actions.
-- [ ] Add keyboard navigation (`Arrow`, `Space`, `J/K`).
-- [ ] Add tap-zone paging for mobile.
-- [ ] Add reader loading skeleton + graceful file failure fallback.
-- [ ] Persist all reader preferences in `user_settings` with local fallback.
+- [x] Apply `theme` and `fontSize` props end-to-end in `EpubReader`.
+- [x] Add font family and line-height controls.
+- [x] Add progress HUD (chapter/page/percentage).
+- [x] Add bookmark and highlight actions.
+- [x] Add keyboard navigation (`Arrow`, `Space`, `J/K`).
+- [x] Add tap-zone paging for mobile.
+- [x] Add reader loading skeleton + graceful file failure fallback.
+- [x] Persist all reader preferences in `user_settings` with local fallback.
 
 ### Tracker (`/tracker`)
-- [ ] Add drag-and-drop columns to change status directly.
-- [ ] Add quick progress update controls on cards.
-- [ ] Add date-based insights (started/finished streaks).
-- [ ] Add personal goals and year challenge widgets.
-- [ ] Add filters by shelf/source/author.
-- [ ] Add compact mode for large libraries.
+- [x] Add drag-and-drop columns to change status directly.
+- [x] Add quick progress update controls on cards.
+- [x] Add date-based insights (started/finished streaks).
+- [x] Add personal goals and year challenge widgets.
+- [x] Add filters by shelf/source/author.
+- [x] Add compact mode for large libraries.
 
 ### Discover (`/discover`, `/discover/browse`)
-- [ ] Improve OPDS card metadata (book count, language, trust indicators).
-- [ ] Add OPDS search in-feed where supported.
-- [ ] Add pagination UI and cached previous page navigation.
-- [ ] Add import preview modal (merge choice/new copy/update).
-- [ ] Add duplicate warnings before import.
-- [ ] Add better cover fallbacks and broken image handling.
+- [x] Improve OPDS card metadata (book count, language, trust indicators).
+- [x] Add OPDS search in-feed where supported.
+- [x] Add pagination UI and cached previous page navigation.
+- [x] Add import preview modal (merge choice/new copy/update).
+- [x] Add duplicate warnings before import.
+- [x] Add better cover fallbacks and broken image handling.
 
 ### Connections (`/connections`, `/connections/add`, `/connections/[id]/browse`)
-- [ ] Add source settings page (currently linked but missing).
-- [ ] Add connection test button and validation before save.
+- [x] Add source settings page (currently linked but missing).
+- [x] Add connection test button and validation before save.
 - [ ] Support credentials flow for private OPDS/API endpoints.
-- [ ] Show last sync time, last error, and item counts.
-- [ ] Add manual sync trigger with progress UI.
-- [ ] Add source deletion confirmation with impact summary.
-- [ ] Add source edit form (name/url/type/trust/sync mode).
+- [x] Show last sync time, last error, and item counts.
+- [x] Add manual sync trigger with progress UI.
+- [x] Add source deletion confirmation with impact summary.
+- [x] Add source edit form (name/url/type/trust/sync mode).
 
 ### Authors and Series (`/authors`, `/series`, detail pages)
-- [ ] Normalize visual style with the rest of app tokens.
-- [ ] Add search and sort within author/series lists.
-- [ ] Add richer stats (total books, started, completed, avg rating).
+- [x] Normalize visual style with the rest of app tokens.
+- [x] Add search and sort within author/series lists.
+- [x] Add richer stats (total books, started, completed, avg rating).
 - [ ] Add author and series follow/watch options.
-- [ ] Add per-author and per-series reading progress summaries.
+- [x] Add per-author and per-series reading progress summaries.
 
 ### Aliases (`/aliases`)
-- [ ] Show full alias card: canonical title, source title, confidence, votes.
-- [ ] Wire approve/reject buttons to server action.
-- [ ] Add queue filters (`pending`, `approved`, `rejected`).
-- [ ] Add conflict explanation text and source provenance.
-- [ ] Add batch vote actions for trusted high-confidence items.
+- [x] Show full alias card: canonical title, source title, confidence, votes.
+- [x] Wire approve/reject buttons to server action.
+- [x] Add queue filters (`pending`, `approved`, `rejected`).
+- [x] Add conflict explanation text and source provenance.
+- [x] Add batch vote actions for trusted high-confidence items.
 
 ### Settings and Modules (`/settings`, `/modules`)
 - [ ] Split settings into user-level and instance-level sections clearly.
@@ -183,12 +183,12 @@ Create a complete UX/UI execution plan that covers:
 
 ### Micro-interactions
 - [ ] Add consistent hover/focus/pressed states to all actionable elements.
-- [ ] Add skeleton loaders sized to final layout to prevent shifts.
-- [ ] Add subtle motion on card entry and filter changes.
-- [ ] Add copy-to-clipboard affordances for IDs/URLs.
+- [x] Add skeleton loaders sized to final layout to prevent shifts.
+- [x] Add subtle motion on card entry and filter changes.
+- [x] Add copy-to-clipboard affordances for IDs/URLs.
 
 ### Accessibility
-- [ ] Ensure all icon-only buttons have `aria-label`.
+- [x] Ensure all icon-only buttons have `aria-label`.
 - [ ] Reach 44x44 minimum touch targets on mobile.
 - [ ] Confirm visible focus rings on every interactive control.
 - [ ] Add semantic headings and landmarks per page.
@@ -199,7 +199,7 @@ Create a complete UX/UI execution plan that covers:
 - [ ] Add tailored empty states with next-step CTA per module.
 - [ ] Add retry affordance on network failures.
 - [ ] Add offline banners and degraded mode hints.
-- [ ] Add informative `not found` screens with recovery links.
+- [x] Add informative `not found` screens with recovery links.
 
 ### Content Quality
 - [ ] Improve CTA clarity (`Add`, `Import`, `Browse`, `Sync` verbs).

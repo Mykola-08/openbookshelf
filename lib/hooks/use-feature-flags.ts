@@ -56,18 +56,22 @@ export function useFeatureFlags() {
   }, []);
 
   const updateFlags = useCallback(
-    (nextFlags: FeatureFlags) => {
-      setFlags(nextFlags);
-      persist(nextFlags);
+    (nextFlags: Partial<FeatureFlags> | FeatureFlags) => {
+      setFlags((prev) => {
+        // Handle both full replacement (for presets/defaults) and partial updates
+        const merged = { ...prev, ...nextFlags };
+        persist(merged);
+        return merged;
+      });
     },
     [persist]
   );
 
   const setFeatureFlag = useCallback(
     (key: FeatureFlagKey, value: boolean) => {
-      updateFlags({ ...flags, [key]: value });
+      updateFlags({ [key]: value });
     },
-    [flags, updateFlags]
+    [updateFlags]
   );
 
   const applyPreset = useCallback(

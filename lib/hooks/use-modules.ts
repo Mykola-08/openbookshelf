@@ -50,24 +50,27 @@ export function useModules() {
   }, []);
 
   const updateState = useCallback(
-    (nextState: ModuleState) => {
-      setModuleState(nextState);
-      persist(nextState);
+    (updater: (prev: ModuleState) => ModuleState) => {
+      setModuleState((prev) => {
+        const nextState = updater(prev);
+        persist(nextState);
+        return nextState;
+      });
     },
     [persist]
   );
 
   const setModuleEnabled = useCallback(
     (moduleId: string, enabled: boolean) => {
-      updateState({
-        ...moduleState,
+      updateState((prev) => ({
+        ...prev,
         enabled: {
-          ...moduleState.enabled,
+          ...prev.enabled,
           [moduleId]: enabled,
         },
-      });
+      }));
     },
-    [moduleState, updateState]
+    [updateState]
   );
 
   const createCustomModule = useCallback(
@@ -80,29 +83,31 @@ export function useModules() {
         enabled: true,
       };
 
-      updateState({
-        ...moduleState,
+      updateState((prev) => ({
+        ...prev,
         enabled: {
-          ...moduleState.enabled,
+          ...prev.enabled,
           [id]: true,
         },
-        customModules: [...moduleState.customModules, customModule],
-      });
+        customModules: [...prev.customModules, customModule],
+      }));
     },
-    [moduleState, updateState]
+    [updateState]
   );
 
   const removeCustomModule = useCallback(
     (moduleId: string) => {
-      const nextEnabled = { ...moduleState.enabled };
-      delete nextEnabled[moduleId];
-      updateState({
-        ...moduleState,
-        enabled: nextEnabled,
-        customModules: moduleState.customModules.filter((module) => module.id !== moduleId),
+      updateState((prev) => {
+        const nextEnabled = { ...prev.enabled };
+        delete nextEnabled[moduleId];
+        return {
+          ...prev,
+          enabled: nextEnabled,
+          customModules: prev.customModules.filter((module) => module.id !== moduleId),
+        };
       });
     },
-    [moduleState, updateState]
+    [updateState]
   );
 
   return useMemo(

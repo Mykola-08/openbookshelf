@@ -1,0 +1,138 @@
+diff --git a/app/settings/page.tsx b/app/settings/page.tsx
+index e9fdb71..1ca1e1a 100644
+--- a/app/settings/page.tsx
++++ b/app/settings/page.tsx
+@@ -2,25 +2,13 @@
+ 
+ import { useMemo, useEffect, useState } from "react";
+ import Link from "next/link";
+-import { RotateCcw, WandSparkles, User, Settings2, Palette, Puzzle, Cpu, Compass, Eye, Sparkles } from "lucide-react";
++import { RotateCcw, WandSparkles, User, Settings2, Palette, Puzzle, Cpu, Compass, Eye } from "lucide-react";
+ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+ import { Badge } from "@/components/ui/badge";
+ import { Button } from "@/components/ui/button";
+ import { Switch } from "@/components/ui/switch";
+ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+ import { createClient } from "@/utils/supabase/client";
+-import { Layout, Zap, Heart, ShieldCheck, Microscope, Layers } from "lucide-react";
+-
+-const PRINCIPLES = [
+-  { icon: Layout, title: "Minimalism by Default", description: "Interfaces should start small. Use only what you need." },
+-  { icon: Sparkles, title: "Hyper-Personalization", description: "From font pairings to database schema, the system adapts to your workflow." },
+-  { icon: ShieldCheck, title: "Privacy and Ownership", description: "Your data belongs to you. Full offline capability." },
+-  { icon: Zap, title: "Performance over Polish", description: "A fast interface matters more than a flashy one." },
+-  { icon: Layers, title: "Modular Complexity", description: "Advanced features are optional modules." },
+-  { icon: Heart, title: "Digital Garden", description: "Your library should feel alive—cultivated over time." }
+-];
+-
+-
+ 
+ import {
+   FEATURE_LABELS,
+@@ -104,7 +92,7 @@ export default function SettingsPage() {
+   
+ 
+   return (
+-    <main className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 min-h-screen">
++    <main className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 min-h-screen">
+       <div className="mb-6 flex justify-between items-start">
+         <div>
+           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Settings</h1>
+@@ -119,20 +107,21 @@ export default function SettingsPage() {
+         </div>
+       </div>
+ 
+-      <Tabs defaultValue="profile" orientation="vertical" className="flex flex-col md:flex-row gap-8 md:gap-12 w-full">
+-        <TabsList className="w-full md:w-56 shrink-0 flex flex-row md:flex-col justify-start h-auto bg-transparent p-0 border-none overflow-x-auto md:overflow-visible gap-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+-          <TabsTrigger value="profile" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors"><User className="w-4 h-4 mr-2" /><span>Profile</span></TabsTrigger>
+-          <TabsTrigger value="preferences" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors"><Settings2 className="w-4 h-4 mr-2" /><span>Preferences</span></TabsTrigger>
+-          <TabsTrigger value="features" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors"><Cpu className="w-4 h-4 mr-2" /><span>Features</span></TabsTrigger>
+-          <TabsTrigger value="visibility" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors"><Eye className="w-4 h-4 mr-2" /><span>Visibility</span></TabsTrigger>
+-          <TabsTrigger value="theme" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors"><Palette className="w-4 h-4 mr-2" /><span>Theme</span></TabsTrigger>
+-          {moduleState.enabled.merge_assistant && <TabsTrigger value="modules" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors"><Puzzle className="w-4 h-4 mr-2" /><span>Advanced</span></TabsTrigger>}
+-          <TabsTrigger value="philosophy" className="rounded-lg px-4 py-2 text-[14px] justify-start data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">
+-            <Compass className="w-4 h-4 mr-2" />
+-            <span>Philosophy</span>
++      <Tabs defaultValue="profile" className="w-full">
++        <TabsList className="mb-6 w-full flex overflow-x-auto justify-start bg-muted/50 p-1 border border-border/30 rounded-xl">
++          <TabsTrigger value="profile" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><User className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Profile</span></TabsTrigger>
++          <TabsTrigger value="preferences" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Settings2 className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Preferences</span></TabsTrigger>
++          <TabsTrigger value="features" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Cpu className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Features</span></TabsTrigger>
++          <TabsTrigger value="visibility" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Eye className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Visibility</span></TabsTrigger>
++          <TabsTrigger value="theme" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Palette className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Theme</span></TabsTrigger>
++          {moduleState.enabled.merge_assistant && <TabsTrigger value="modules" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Puzzle className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Advanced</span></TabsTrigger>}
++          <TabsTrigger value="philosophy" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm" asChild>
++            <Link href="/settings/philosophy">
++              <Compass className="w-3.5 h-3.5 md:mr-1.5" />
++              <span className="hidden md:inline">Philosophy</span>
++            </Link>
+           </TabsTrigger>
+         </TabsList>
+-        <div className="flex-1 min-w-0 w-full space-y-6">
+ 
+         <TabsContent value="profile" className="animate-in fade-in-50">
+           <SectionCard title="Account Information" description="Your personal account details and system role.">
+@@ -503,63 +492,6 @@ export default function SettingsPage() {
+             </SectionCard>
+           </TabsContent>
+         )}
+-      </div>
+-      
+-        <TabsContent value="philosophy" className="animate-in fade-in-50">
+-          <SectionCard title="The OpenBookshelf Way" description="We believe reading software should be as focus-oriented as the books themselves.">
+-            <div className="flex flex-col gap-2 mt-4">
+-              {PRINCIPLES.map((p, i) => (
+-                <div key={i} className="flex gap-4 p-4 rounded-xl bg-card border border-border/40">
+-                  <div className="shrink-0 mt-0.5"><p.icon className="w-5 h-5 text-muted-foreground" /></div>
+-                  <div className="space-y-1">
+-                    <h3 className="font-semibold text-[15px]">{p.title}</h3>
+-                    <p className="text-[13px] text-muted-foreground">{p.description}</p>
+-                  </div>
+-                </div>
+-              ))}
+-            </div>
+-            
+-            <div className="mt-6 flex gap-4 p-5 rounded-xl bg-accent/30 border border-accent">
+-              <Compass className="w-5 h-5 text-foreground shrink-0 mt-0.5" />
+-              <div className="space-y-1">
+-                <div className="font-semibold text-[14px]">Guiding Star</div>
+-                <p className="text-[13px] text-muted-foreground leading-relaxed">
+-                  "A library is not a collection of books, but a collection of thoughts. 
+-                  The software should never stand between a reader and those thoughts."
+-                </p>
+-              </div>
+-            </div>
+-          </SectionCard>
+-        </TabsContent>
+-
+-      
+-        <TabsContent value="philosophy" className="animate-in fade-in-50">
+-          <SectionCard title="The OpenBookshelf Way" description="We believe reading software should be as focus-oriented as the books themselves.">
+-            <div className="flex flex-col gap-2 mt-4">
+-              {PRINCIPLES.map((p, i) => (
+-                <div key={i} className="flex gap-4 p-4 rounded-xl bg-card border border-border/40">
+-                  <div className="shrink-0 mt-0.5"><p.icon className="w-5 h-5 text-muted-foreground" /></div>
+-                  <div className="space-y-1">
+-                    <h3 className="font-semibold text-[15px]">{p.title}</h3>
+-                    <p className="text-[13px] text-muted-foreground">{p.description}</p>
+-                  </div>
+-                </div>
+-              ))}
+-            </div>
+-            
+-            <div className="mt-6 flex gap-4 p-5 rounded-xl bg-accent/30 border border-accent">
+-              <Compass className="w-5 h-5 text-foreground shrink-0 mt-0.5" />
+-              <div className="space-y-1">
+-                <div className="font-semibold text-[14px]">Guiding Star</div>
+-                <p className="text-[13px] text-muted-foreground leading-relaxed">
+-                  "A library is not a collection of books, but a collection of thoughts. 
+-                  The software should never stand between a reader and those thoughts."
+-                </p>
+-              </div>
+-            </div>
+-          </SectionCard>
+-        </TabsContent>
+-
+       </Tabs>
+     </main>
+   );

@@ -5,14 +5,18 @@ import { createClient } from "@/utils/supabase/client";
 import {
   DEFAULT_USER_SETTINGS,
   USER_SETTINGS_STORAGE_KEY,
+  USER_SETTINGS_COOKIE_NAME,
+  USER_SETTING_PRESETS,
   normalizeUserSettings,
   parseUserSettings,
   type UserSettings,
+  type UserSettingPresetId,
 } from "@/lib/config/user-settings";
 
 interface UseUserSettingsResult {
   settings: UserSettings;
   setSetting: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void;
+  applyPreset: (presetId: UserSettingPresetId) => void;
   replaceSettings: (next: Partial<UserSettings>) => void;
   resetSettings: () => void;
   saveState: "idle" | "saving" | "saved" | "error";
@@ -25,7 +29,11 @@ interface UseUserSettingsOptions {
 
 const persistLocalSettings = (settings: UserSettings) => {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(USER_SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  const serialized = JSON.stringify(settings);
+  window.localStorage.setItem(USER_SETTINGS_STORAGE_KEY, serialized);
+  // Also persist to cookie so server components can read feature visibility toggles
+  const maxAge = 365 * 24 * 60 * 60;
+  document.cookie = `${USER_SETTINGS_COOKIE_NAME}=${encodeURIComponent(serialized)}; path=/; max-age=${maxAge}; samesite=lax`;
 };
 
 const readInitialSettings = (): UserSettings => {
@@ -132,17 +140,28 @@ export function useUserSettings(options?: UseUserSettingsOptions): UseUserSettin
 
   const replaceSettings = useCallback(
     (next: Partial<UserSettings>) => {
-      const merged = normalizeUserSettings({ ...settings, ...next });
-      setSettings(merged);
-      persistLocalSettings(merged);
-      scheduleDbSave(merged);
+      setSettings((prev) => {
+        const merged = normalizeUserSettings({ ...prev, ...next });
+        persistLocalSettings(merged);
+        scheduleDbSave(merged);
+        return merged;
+      });
     },
-    [scheduleDbSave, settings]
+    [scheduleDbSave]
   );
 
   const setSetting = useCallback(
     <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
       replaceSettings({ [key]: value } as Partial<UserSettings>);
+    },
+    [replaceSettings]
+  );
+
+  const applyPreset = useCallback(
+    (presetId: UserSettingPresetId) => {
+      const preset = USER_SETTING_PRESETS[presetId];
+      if (!preset) return;
+      replaceSettings(preset.settings);
     },
     [replaceSettings]
   );
@@ -156,6 +175,7 @@ export function useUserSettings(options?: UseUserSettingsOptions): UseUserSettin
   return {
     settings,
     setSetting,
+    applyPreset,
     replaceSettings,
     resetSettings,
     saveState,

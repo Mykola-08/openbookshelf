@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { User, Library, Filter, Layers, LayoutGrid, List, ArrowDownWideNarrow } from "lucide-react";
+import { cookies } from "next/headers";
+import { User, Library, Filter, Layers, LayoutGrid, List, ArrowDownWideNarrow, BookOpen } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import BookCard from "@/components/BookCard";
 import { EmptyState } from "@/components/ui/empty-state";
 import MatchingInbox from "@/components/MatchingInbox";
+import { LibraryClientShell } from "@/components/LibraryClientShell";
+import { SelectableBookWrapper } from "@/components/SelectableBookWrapper";
+import { LibraryToolbar } from "@/components/LibraryToolbar";
+import { USER_SETTINGS_COOKIE_NAME, parseUserSettings } from "@/lib/config/user-settings";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +17,8 @@ export default async function Home(props: {
 }) {
   const searchParams = await props.searchParams;
   const supabase = await createClient();
+  const cookieStore = await cookies();
+  const userSettings = parseUserSettings(cookieStore.get(USER_SETTINGS_COOKIE_NAME)?.value ? decodeURIComponent(cookieStore.get(USER_SETTINGS_COOKIE_NAME)!.value) : null);
   const { data: { user } } = await supabase.auth.getUser();
 
   const statusFilter = searchParams.status || 'all';
@@ -47,7 +54,7 @@ export default async function Home(props: {
     .in('sync_state', ['pending_create', 'conflict'])
     .limit(10);
     
-  const pendingInboxItems = (pendingSources || []).map(item => ({
+  const pendingInboxItems = (pendingSources || []).map((item: any) => ({
     id: item.id,
     sourceBook: {
       title: item.last_synced_data?.title || item.remote_id,
@@ -74,93 +81,118 @@ export default async function Home(props: {
     });
   }
 
+  const allUserBookIds = booksToDisplay.map((ub: any) => ub.id);
+
   return (
+    <LibraryClientShell allUserBookIds={allUserBookIds}>
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row gap-8">
-        {/* Sidebar / Filters */}
-        <aside className="w-full md:w-64 flex-shrink-0 space-y-8 md:sticky md:top-24 h-max">
-          <div>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Status</h3>
-            <ul className="space-y-1">
-              {[
-                { id: 'all', label: 'All Books' },
-                { id: 'toread', label: 'To Read' },
-                { id: 'reading', label: 'Reading' },
-                { id: 'finished', label: 'Finished' },
-                { id: 'abandoned', label: 'Abandoned' }
-              ].map(st => (
-                <li key={st.id}>
-                   <Link 
-                     href={`/?status=${st.id}&sort=${sortOption}&view=${viewMode}`} 
-                     className={`flex justify-between items-center text-sm px-3 py-2 rounded-md ${statusFilter === st.id ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}
-                   >
-                     <span>{st.label}</span>
-                   </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Sort By</h3>
-            <ul className="space-y-1">
-              {[
-                { id: 'recent', label: 'Recently Opened' },
-                { id: 'title', label: 'Title (A-Z)' },
-                { id: 'author', label: 'Author (A-Z)' },
-                { id: 'progress', label: 'Highest Progress' },
-                { id: 'rating', label: 'Highest Rated' },
-              ].map(st => (
-                <li key={st.id}>
-                   <Link 
-                     href={`/?sort=${st.id}&status=${statusFilter}&view=${viewMode}`} 
-                     className={`flex justify-between items-center text-sm px-3 py-2 rounded-md ${sortOption === st.id ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'}`}
-                   >
-                     <span>{st.label}</span>
-                   </Link>
-                </li>
-              ))}
-            </ul>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
+        
+        {/* Sidebar / Filters — styled as a card on desktop, collapsible on mobile */}
+        <aside className="w-full md:w-56 lg:w-60 flex-shrink-0 md:sticky md:top-20 h-max">
+          <div className="rounded-xl border border-border/60 bg-card/50 p-4 space-y-6 shadow-sm">
+            <div>
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 px-1">Status</h3>
+              <ul className="space-y-0.5">
+                {[
+                  { id: 'all', label: 'All Books', count: booksToDisplay.length },
+                  { id: 'toread', label: 'To Read' },
+                  { id: 'reading', label: 'Reading' },
+                  { id: 'finished', label: 'Finished' },
+                  { id: 'abandoned', label: 'Abandoned' }
+                ].map(st => (
+                  <li key={st.id}>
+                    <Link 
+                      href={`/?status=${st.id}&sort=${sortOption}&view=${viewMode}`} 
+                      className={`flex items-center justify-between text-[13px] px-2.5 py-1.5 rounded-lg transition-colors ${
+                        statusFilter === st.id 
+                          ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      }`}
+                    >
+                      <span>{st.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="h-px bg-border/50" />
+            
+            <div>
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 px-1">Sort By</h3>
+              <ul className="space-y-0.5">
+                {[
+                  { id: 'recent', label: 'Recently Opened' },
+                  { id: 'title', label: 'Title (A-Z)' },
+                  { id: 'author', label: 'Author (A-Z)' },
+                  { id: 'progress', label: 'Highest Progress' },
+                  { id: 'rating', label: 'Highest Rated' },
+                ].map(st => (
+                  <li key={st.id}>
+                    <Link 
+                      href={`/?sort=${st.id}&status=${statusFilter}&view=${viewMode}`} 
+                      className={`flex items-center text-[13px] px-2.5 py-1.5 rounded-lg transition-colors ${
+                        sortOption === st.id 
+                          ? 'bg-foreground/[0.06] text-foreground font-medium' 
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      }`}
+                    >
+                      <span>{st.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </aside>
 
         {/* Content */}
         <main className="flex-1 min-w-0">
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 gap-4">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-               {statusFilter === 'all' ? 'All Books' : statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
-            </h1>
-            <div className="flex gap-2 bg-secondary p-1 rounded-lg w-max">
-               <Link href={`/?view=grid&status=${statusFilter}&sort=${sortOption}`} className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-                 <LayoutGrid className="w-4 h-4" />
-               </Link>
-               <Link href={`/?view=list&status=${statusFilter}&sort=${sortOption}`} className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-                 <List className="w-4 h-4" />
-               </Link>
-               <Link href={`/?view=dense&status=${statusFilter}&sort=${sortOption}`} className={`p-1.5 rounded-md ${viewMode === 'dense' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-                 <Filter className="w-4 h-4" />
-               </Link>
+          <div className="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                {statusFilter === 'all' ? 'Library' : statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {booksToDisplay.length} {booksToDisplay.length === 1 ? 'book' : 'books'}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex gap-0.5 bg-muted/50 p-0.5 rounded-lg border border-border/40">
+                 <Link href={`/?view=grid&status=${statusFilter}&sort=${sortOption}`} aria-label="Grid view" className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
+                   <LayoutGrid className="w-3.5 h-3.5" />
+                 </Link>
+                 <Link href={`/?view=list&status=${statusFilter}&sort=${sortOption}`} aria-label="List view" className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
+                   <List className="w-3.5 h-3.5" />
+                 </Link>
+                 <Link href={`/?view=dense&status=${statusFilter}&sort=${sortOption}`} aria-label="Dense view" className={`p-1.5 rounded-md transition-colors ${viewMode === 'dense' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
+                   <Filter className="w-3.5 h-3.5" />
+                 </Link>
+              </div>
+              <LibraryToolbar />
             </div>
           </div>
 
-          {pendingInboxItems.length > 0 && <MatchingInbox pendingMatches={pendingInboxItems} />}
+          {userSettings.enableMatchingInbox && pendingInboxItems.length > 0 && <MatchingInbox pendingMatches={pendingInboxItems} />}
 
           {!booksToDisplay.length ? (
             <EmptyState 
               icon={Library} 
-              title="No books found" 
-              description="Your library doesn't have any books matching these criteria. Try adjusting your filters or adding new books." 
+              title="No books yet" 
+              description="Your library is waiting. Add books from the Discover page or import from a connected source." 
               action={
-                <Link href="/discover" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4 shadow-sm">
+                <Link href="/discover" className="inline-flex items-center gap-2 rounded-lg text-sm font-medium bg-foreground text-background hover:bg-foreground/90 transition-colors h-9 px-4 shadow-sm">
+                  <BookOpen className="w-4 h-4" />
                   Discover Books
                 </Link>
               }
             />
           ) : (
             <div className={`
-              ${viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6' : ''}
-              ${viewMode === 'list' ? 'space-y-4 flex flex-col' : ''}
-              ${viewMode === 'dense' ? 'space-y-2 flex flex-col' : ''}
+              ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5' : ''}
+              ${viewMode === 'list' ? 'space-y-3 flex flex-col' : ''}
+              ${viewMode === 'dense' ? 'space-y-1 flex flex-col' : ''}
             `}>
               {booksToDisplay.map((ub: any) => {
                 const bookItem = ub.books;
@@ -176,52 +208,60 @@ export default async function Home(props: {
 
                 if (viewMode === 'dense') {
                   return (
-                    <Link key={ub.id} href={`/book/${bookItem.id}`} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-4 truncate">
-                         <span className="font-medium truncate">{mappedBook.title}</span>
-                         <span className="text-sm text-muted-foreground hidden sm:inline-block truncate">{mappedBook.authors[0]}</span>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground shrink-0">
-                         {mappedBook.rating && <span>★ {mappedBook.rating}</span>}
-                         {mappedBook.progress !== undefined && <span>{mappedBook.progress}%</span>}
-                         <span className="w-20 text-right capitalize">{mappedBook.status}</span>
-                      </div>
-                    </Link>
+                    <SelectableBookWrapper key={ub.id} userBookId={ub.id}>
+                      <Link href={`/book/${bookItem.id}`} className="flex items-center justify-between px-3 py-2.5 border border-border/40 rounded-lg hover:bg-muted/30 transition-colors group">
+                        <div className="flex items-center gap-3 truncate">
+                           <span className="font-medium text-sm truncate group-hover:text-foreground">{mappedBook.title}</span>
+                           <span className="text-xs text-muted-foreground hidden sm:inline-block truncate">{mappedBook.authors[0]}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
+                           {mappedBook.rating && <span className="text-primary">★ {mappedBook.rating}</span>}
+                           {mappedBook.progress !== undefined && <span className="tabular-nums">{mappedBook.progress}%</span>}
+                           <span className="w-16 text-right capitalize text-[11px] font-medium bg-muted/50 px-1.5 py-0.5 rounded">{mappedBook.status}</span>
+                        </div>
+                      </Link>
+                    </SelectableBookWrapper>
                   );
                 }
 
                 if (viewMode === 'list') {
                   return (
-                    <div key={ub.id} className="flex gap-4 border p-4 rounded-xl hover:bg-muted/20 transition-colors">
-                       <Link href={`/book/${bookItem.id}`} className="w-20 h-28 bg-muted rounded overflow-hidden shrink-0 shadow-sm transition-transform hover:scale-105 duration-300 relative group">
+                    <SelectableBookWrapper key={ub.id} userBookId={ub.id}>
+                    <div className="flex gap-4 border border-border/40 p-3.5 rounded-xl hover:bg-muted/20 transition-colors group">
+                       <Link href={`/book/${bookItem.id}`} className="w-16 h-24 bg-muted rounded-lg overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-[1.02] relative">
                           {mappedBook.coverUrl ? (
                             <img src={mappedBook.coverUrl} alt={mappedBook.title} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">No Cover</div>
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                              <BookOpen className="w-5 h-5 opacity-50" />
+                            </div>
                           )}
                        </Link>
-                       <div className="flex flex-col flex-1 min-w-0">
-                          <Link href={`/book/${bookItem.id}`} className="font-semibold text-lg hover:text-primary transition-colors line-clamp-1 truncate">{mappedBook.title}</Link>
-                          <p className="text-muted-foreground text-sm mb-2">{mappedBook.authors.join(', ')}</p>
-                          <div className="mt-auto flex items-center gap-4 text-sm">
-                             <span className="bg-secondary px-2 py-1 rounded-md capitalize font-medium">{mappedBook.status}</span>
-                             {mappedBook.rating && <span className="flex items-center gap-1 text-amber-500">★ {mappedBook.rating}</span>}
+                       <div className="flex flex-col flex-1 min-w-0 py-0.5">
+                          <Link href={`/book/${bookItem.id}`} className="font-medium text-[15px] hover:text-foreground transition-colors line-clamp-1">{mappedBook.title}</Link>
+                          <p className="text-muted-foreground text-xs mt-0.5">{mappedBook.authors.join(', ')}</p>
+                          <div className="mt-auto flex items-center gap-3 text-xs">
+                             <span className="bg-muted/60 px-2 py-0.5 rounded capitalize font-medium text-[11px]">{mappedBook.status}</span>
+                             {mappedBook.rating && <span className="text-primary">★ {mappedBook.rating}</span>}
                           </div>
                           {mappedBook.status === 'reading' && mappedBook.progress !== undefined && (
-                            <div className="mt-3 w-full max-w-md bg-secondary rounded-full h-1.5 overflow-hidden">
-                              <div className="bg-primary h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(mappedBook.progress, 100)}%` }}></div>
+                            <div className="mt-2 w-full max-w-xs bg-muted/50 rounded-full h-1 overflow-hidden">
+                              <div className="bg-foreground/60 h-full rounded-full transition-all" style={{ width: `${Math.min(mappedBook.progress, 100)}%` }}></div>
                             </div>
                           )}
                        </div>
                     </div>
+                    </SelectableBookWrapper>
                   );
                 }
 
                 // Grid mode
                 return (
-                  <Link key={ub.id} href={`/book/${bookItem.id}`} className="block">
-                    <BookCard book={mappedBook} />
-                  </Link>
+                  <SelectableBookWrapper key={ub.id} userBookId={ub.id}>
+                    <Link href={`/book/${bookItem.id}`} className="block">
+                      <BookCard book={mappedBook} />
+                    </Link>
+                  </SelectableBookWrapper>
                 );
               })}
             </div>
@@ -229,5 +269,6 @@ export default async function Home(props: {
         </main>
       </div>
     </div>
+    </LibraryClientShell>
   );
 }

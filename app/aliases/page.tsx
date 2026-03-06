@@ -102,7 +102,7 @@ export default async function AliasesPage() {
   return (
     <main className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 min-h-screen">
       <section className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">Library Aliases</h1>
+        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Library Aliases</h1>
         <p className="text-sm text-muted-foreground">
           Vote whether alternate titles map to the same book in your library. Approved aliases become searchable.
         </p>

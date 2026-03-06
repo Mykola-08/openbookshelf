@@ -81,7 +81,7 @@ export default function AddSourcePage() {
                <button 
                  type="button"
                  onClick={() => setFormData({...formData, type: 'private_api'})}
-                 className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${formData.type === 'private_api' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:bg-gray-50'}`}
+                 className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-all ${formData.type === 'private_api' ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:bg-accent/50'}`}
                >
                  <Lock className="w-6 h-6 mb-2" />
                  <span className="text-sm font-medium">Private API</span>
@@ -104,7 +104,7 @@ export default function AddSourcePage() {
             </p>
           </div>
 
-          <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
+          <div className="pt-4 border-t border-border flex justify-end gap-3">
             <button 
               type="button" 
               onClick={() => router.back()}

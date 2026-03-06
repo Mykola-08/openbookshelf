@@ -26,7 +26,129 @@ export interface UserSettings {
   enableReviews: boolean;
   enableGoals: boolean;
   enableActivityFeed: boolean;
+  enableTrackingQuantity: boolean;
+  // Granular feature visibility toggles
+  enableCommandPalette: boolean;
+  enableScrollToTop: boolean;
+  enableBookHealth: boolean;
+  enableReadingTimeline: boolean;
+  enableReadingInsights: boolean;
+  enableQuickActions: boolean;
+  enableBulkActions: boolean;
+  enableAdvancedSearch: boolean;
+  enableMatchingInbox: boolean;
+  enableSourceProvenance: boolean;
+  enableCopyButtons: boolean;
+  enableChapters: boolean;
+  enableBookSummary: boolean;
+  enableAliases: boolean;
+  enableConnections: boolean;
+  enableCatalogDropdown: boolean;
 }
+
+export type UserSettingPresetId = "minimalist" | "balanced" | "power_reader" | "writer";
+
+export const USER_SETTING_PRESETS: Record<
+  UserSettingPresetId,
+  { title: string; description: string; settings: Partial<UserSettings> }
+> = {
+  minimalist: {
+    title: "Minimalist",
+    description: "Just you and your books. No metrics, no feed, no noise.",
+    settings: {
+      enableCommunity: false,
+      enableReviews: false,
+      enableGoals: false,
+      enableActivityFeed: false,
+      enableTrackingQuantity: false,
+      autoPrefetch: false,
+      summaryDepth: "short",
+      enableBookHealth: false,
+      enableReadingTimeline: false,
+      enableReadingInsights: false,
+      enableQuickActions: false,
+      enableBulkActions: false,
+      enableAdvancedSearch: false,
+      enableMatchingInbox: false,
+      enableSourceProvenance: false,
+      enableCopyButtons: false,
+      enableAliases: false,
+      enableCatalogDropdown: false,
+    },
+  },
+  balanced: {
+    title: "Balanced",
+    description: "Perfect for most readers. Useful metrics without being overwhelming.",
+    settings: {
+      enableCommunity: true,
+      enableReviews: true,
+      enableGoals: true,
+      enableActivityFeed: false,
+      enableTrackingQuantity: false,
+      autoPrefetch: true,
+      summaryDepth: "balanced",
+      enableBookHealth: false,
+      enableReadingTimeline: true,
+      enableReadingInsights: true,
+      enableQuickActions: true,
+      enableBulkActions: false,
+      enableAdvancedSearch: false,
+      enableMatchingInbox: false,
+      enableSourceProvenance: false,
+      enableCopyButtons: false,
+      enableAliases: false,
+      enableCatalogDropdown: true,
+    },
+  },
+  power_reader: {
+    title: "Power Reader",
+    description: "For the data-driven library. Tracking, velocity, and community insights.",
+    settings: {
+      enableCommunity: true,
+      enableReviews: true,
+      enableGoals: true,
+      enableActivityFeed: true,
+      enableTrackingQuantity: true,
+      autoPrefetch: true,
+      summaryDepth: "deep",
+      enableBookHealth: true,
+      enableReadingTimeline: true,
+      enableReadingInsights: true,
+      enableQuickActions: true,
+      enableBulkActions: true,
+      enableAdvancedSearch: true,
+      enableMatchingInbox: true,
+      enableSourceProvenance: true,
+      enableCopyButtons: true,
+      enableAliases: true,
+      enableCatalogDropdown: true,
+    },
+  },
+  writer: {
+    title: "Researcher",
+    description: "Focused on depth. High-quality summaries and alias resolution focus.",
+    settings: {
+      enableCommunity: true,
+      enableReviews: true,
+      enableGoals: false,
+      enableActivityFeed: false,
+      enableTrackingQuantity: false,
+      summaryDepth: "deep",
+      autoPrefetch: true,
+      enableBookHealth: true,
+      enableReadingTimeline: true,
+      enableReadingInsights: true,
+      enableQuickActions: false,
+      enableBulkActions: false,
+      enableAdvancedSearch: true,
+      enableMatchingInbox: true,
+      enableSourceProvenance: true,
+      enableCopyButtons: true,
+      enableAliases: true,
+      enableCatalogDropdown: true,
+    },
+  },
+};
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   theme: "system",
@@ -45,14 +167,33 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   fontSize: 16,
   fontFamily: "serif",
   lineHeight: 1.5,
-  // Community toggles
-  enableCommunity: true,
-  enableReviews: true,
-  enableGoals: true,
-  enableActivityFeed: true,
+  // Community & Tracking toggles
+  enableCommunity: false,
+  enableReviews: false,
+  enableGoals: false,
+  enableActivityFeed: false,
+  enableTrackingQuantity: false,
+  // Granular feature visibility — uncommon/niche features off by default
+  enableCommandPalette: true,
+  enableScrollToTop: true,
+  enableBookHealth: false,
+  enableReadingTimeline: false,
+  enableReadingInsights: true,
+  enableQuickActions: true,
+  enableBulkActions: false,
+  enableAdvancedSearch: false,
+  enableMatchingInbox: false,
+  enableSourceProvenance: false,
+  enableCopyButtons: false,
+  enableChapters: true,
+  enableBookSummary: true,
+  enableAliases: false,
+  enableConnections: true,
+  enableCatalogDropdown: true,
 };
 
 export const USER_SETTINGS_STORAGE_KEY = "obs.settings.v2";
+export const USER_SETTINGS_COOKIE_NAME = "obs_user_settings";
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 

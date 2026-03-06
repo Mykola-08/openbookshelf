@@ -35,7 +35,7 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
   };
 
   return (
-    <div className="flex bg-white border border-gray-200 rounded-lg p-4 gap-4 hover:shadow-md transition-shadow">
+    <div className="flex bg-card border border-border rounded-lg p-4 gap-4 hover:shadow-md transition-shadow">
       {/* Cover Image */}
       <div className="relative w-20 h-28 bg-secondary rounded overflow-hidden flex-shrink-0">
         {coverUrl ? (
@@ -87,7 +87,7 @@ export function RemoteBookItem({ entry, sourceId }: RemoteBookItemProps) {
            </button>
         </div>
         {status === 'error' && errorMsg && (
-          <p className="text-xs text-red-600 mt-1">{errorMsg}</p>
+          <p className="text-xs text-destructive mt-1">{errorMsg}</p>
         )}
       </div>
     </div>

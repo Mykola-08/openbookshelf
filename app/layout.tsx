@@ -7,6 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { AppThemeRuntime } from "@/components/AppThemeRuntime";
 import { DemoModeBanner } from "@/components/DemoModeBanner";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -63,11 +64,13 @@ export default function RootLayout({
         <AppThemeRuntime />
         
         <OnboardingDialog />
+        <Navbar />
         {/* Main wrapper */}
-        <div className="flex-1 flex flex-col motion-page-enter">
+        <div className="flex-1 flex flex-col motion-page-enter pb-16 md:pb-0">
           {children}
         </div>
         {demoModeActive && <DemoModeBanner reason={demoModeReason} />}
+        <ScrollToTop />
       </body>
     </html>
   );

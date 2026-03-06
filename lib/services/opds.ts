@@ -1,0 +1,1 @@
+export const OPDS_SERVERS = [{name: 'Flibusta', url: 'http://flibusta.is/opds'}, {name: 'Project Gutenberg', url: 'https://m.gutenberg.org/ebooks.opds'}, {name: 'Standard Ebooks', url: 'https://standardebooks.org/opds'}];

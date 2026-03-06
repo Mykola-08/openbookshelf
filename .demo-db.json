@@ -1,0 +1,114 @@
+{
+  "tables": {
+    "profiles": [
+      {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "username": "demo",
+        "full_name": "Demo User",
+        "created_at": "2026-03-06T10:09:15.579Z",
+        "updated_at": "2026-03-06T10:09:15.580Z"
+      }
+    ],
+    "app_user_roles": [
+      {
+        "user_id": "00000000-0000-0000-0000-000000000001",
+        "role": "admin",
+        "created_at": "2026-03-06T10:09:15.580Z",
+        "updated_at": "2026-03-06T10:09:15.580Z"
+      }
+    ],
+    "authors": [
+      {
+        "id": "963a0abf-f32c-4427-a083-3868eb6465ce",
+        "name": "Frank Herbert",
+        "slug": "frank-herbert",
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      },
+      {
+        "id": "74facdd2-ecf4-43b6-a3d4-7de701167f07",
+        "name": "Isaac Asimov",
+        "slug": "isaac-asimov",
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      }
+    ],
+    "series": [],
+    "books": [
+      {
+        "id": "3cc264a1-f2b2-4c69-a35e-f110bffea0e6",
+        "title": "Dune",
+        "description": "A demo seeded title.",
+        "cover_url": null,
+        "published_year": 1965,
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      },
+      {
+        "id": "ea25043e-8245-441d-b857-904c8834c982",
+        "title": "Foundation",
+        "description": "A demo seeded title.",
+        "cover_url": null,
+        "published_year": 1951,
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      }
+    ],
+    "book_authors": [
+      {
+        "book_id": "3cc264a1-f2b2-4c69-a35e-f110bffea0e6",
+        "author_id": "963a0abf-f32c-4427-a083-3868eb6465ce"
+      },
+      {
+        "book_id": "ea25043e-8245-441d-b857-904c8834c982",
+        "author_id": "74facdd2-ecf4-43b6-a3d4-7de701167f07"
+      }
+    ],
+    "book_series": [],
+    "book_files": [],
+    "book_chapters": [],
+    "user_books": [
+      {
+        "id": "050bfcb9-8940-441a-b1d0-b7d58b6fabe7",
+        "user_id": "00000000-0000-0000-0000-000000000001",
+        "book_id": "3cc264a1-f2b2-4c69-a35e-f110bffea0e6",
+        "status": "reading",
+        "progress": 34,
+        "reading_location": null,
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      },
+      {
+        "id": "8b66f7a0-25a3-4670-bc3f-c00a45266831",
+        "user_id": "00000000-0000-0000-0000-000000000001",
+        "book_id": "ea25043e-8245-441d-b857-904c8834c982",
+        "status": "toread",
+        "progress": 0,
+        "reading_location": null,
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      }
+    ],
+    "user_sources": [
+      {
+        "id": "4e302c4b-8831-4c12-9451-f6fb1717d265",
+        "user_id": "00000000-0000-0000-0000-000000000001",
+        "name": "Demo OPDS Source",
+        "type": "public_url",
+        "config": {
+          "url": "https://standardebooks.org/opds/all"
+        },
+        "sync_mode": "pull_only",
+        "trust_level": "medium",
+        "automation": "ask",
+        "conflict_rule": "ask",
+        "created_at": "2026-03-06T10:09:15.582Z",
+        "updated_at": "2026-03-06T10:09:15.582Z"
+      }
+    ],
+    "source_items": [],
+    "book_aliases": [],
+    "book_alias_votes": [],
+    "user_settings": []
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useMemo, useEffect, useState } from "react";
 import Link from "next/link";
-import { RotateCcw, WandSparkles, User, Settings2, Palette, Puzzle, Cpu } from "lucide-react";
+import { RotateCcw, WandSparkles, User, Settings2, Palette, Puzzle, Cpu, Compass, Eye } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   type FeatureFlagKey,
   type FeaturePresetId,
 } from "@/lib/config/feature-flags";
+import { USER_SETTING_PRESETS, type UserSettingPresetId } from "@/lib/config/user-settings";
 import { useFeatureFlags } from "@/lib/hooks/use-feature-flags";
 import { useUserSettings } from "@/lib/hooks/use-user-settings";
 import { openOnboardingDialog } from "@/components/OnboardingDialog";
@@ -28,13 +29,13 @@ import { cn } from "@/lib/utils";
 
 
 const SectionCard = ({ children, title, description, badge }: any) => (
-  <Card className="mb-8 border-border/40 shadow-none">
-    <CardHeader className="flex flex-row items-center justify-between pb-4">
-      <div className="space-y-1">
-        <CardTitle className="text-xl">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+  <Card className="mb-6 border-border/40 shadow-none bg-card/50">
+    <CardHeader className="flex flex-row items-center justify-between pb-3">
+      <div className="space-y-0.5">
+        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+        {description && <CardDescription className="text-[13px]">{description}</CardDescription>}
       </div>
-      {badge && <Badge variant="secondary" className="font-normal">{badge}</Badge>}
+      {badge && <Badge variant="secondary" className="font-normal text-[11px]">{badge}</Badge>}
     </CardHeader>
     <CardContent className="pt-0">
       {children}
@@ -43,8 +44,8 @@ const SectionCard = ({ children, title, description, badge }: any) => (
 );
 
 const ListItem = ({ children, isLast, title, description, action }: any) => (
-  <div className={cn("flex items-center justify-between gap-4")}>
-    <div className="flex-1 space-y-1">
+  <div className={cn("flex items-center justify-between gap-4 py-3", !isLast && "border-b border-border/30")}>
+    <div className="flex-1 space-y-0.5">
       <p className="text-sm font-medium leading-none">{title}</p>
       {description && <p className="text-[13px] text-muted-foreground">{description}</p>}
       {children && <div className="mt-3">{children}</div>}
@@ -54,9 +55,9 @@ const ListItem = ({ children, isLast, title, description, action }: any) => (
 );
 
 export default function SettingsPage() {
-  const { flags, setFeatureFlag, applyPreset, resetDefaults } = useFeatureFlags();
+  const { flags, setFeatureFlag, applyPreset: applyFeaturePreset, resetDefaults } = useFeatureFlags();
   const { moduleState } = useModules();
-  const { settings, setSetting, resetSettings, saveState } = useUserSettings({
+  const { settings, setSetting, applyPreset: applyUserPreset, resetSettings, saveState } = useUserSettings({
     syncToDb: Boolean(moduleState.enabled.settings_sync),
   });
 
@@ -81,6 +82,8 @@ export default function SettingsPage() {
   const activeMode = useMemo(() => getFeatureModeLabel(flags), [flags]);
 
   const toggleFlag = (key: FeatureFlagKey) => setFeatureFlag(key, !flags[key]);
+  const handleApplyFeaturePreset = (id: FeaturePresetId) => applyFeaturePreset(id);
+  const handleApplyUserPreset = (id: UserSettingPresetId) => applyUserPreset(id);
   const reopenOnboarding = () => { window.localStorage.removeItem(ONBOARDING_DONE_KEY); openOnboardingDialog(); };
 
   // Apple-like sections: large border-radius, pure white background on cards with subtle borders
@@ -90,27 +93,34 @@ export default function SettingsPage() {
 
   return (
     <main className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 min-h-screen">
-            <div className="space-y-1 mb-8 px-2 flex justify-between items-start">
+      <div className="mb-6 flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
-          <p className="text-muted-foreground text-[15px]">
-            Manage your account, preferences, and module integrations.
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Settings</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">
+            Manage your account, preferences, and modules.
           </p>
         </div>
-        <div className="flex items-center text-sm font-medium">
-          {saveState === 'saving' && <span className="text-muted-foreground animate-pulse flex items-center gap-2"><div className="w-2 h-2 rounded-full border-2 border-muted-foreground border-t-transparent animate-spin"/> Saving...</span>}
-          {saveState === 'saved' && <span className="text-green-600 flex items-center gap-1">✓ Saved</span>}
-          {saveState === 'error' && <span className="text-destructive flex items-center gap-1">✕ Error saving</span>}
+        <div className="flex items-center text-xs font-medium">
+          {saveState === 'saving' && <span className="text-muted-foreground animate-pulse flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full border-2 border-muted-foreground border-t-transparent animate-spin"/> Saving</span>}
+          {saveState === 'saved' && <span className="text-primary flex items-center gap-1">✓ Saved</span>}
+          {saveState === 'error' && <span className="text-destructive flex items-center gap-1">✕ Error</span>}
         </div>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="mb-6 w-full flex overflow-x-auto justify-start bg-muted p-1 border-none rounded-full">
-          <TabsTrigger value="profile" className="rounded-full px-4"><User className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Profile</span></TabsTrigger>
-          <TabsTrigger value="preferences" className="rounded-full px-4"><Settings2 className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Preferences</span></TabsTrigger>
-          <TabsTrigger value="features" className="rounded-full px-4"><Cpu className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Features</span></TabsTrigger>
-          <TabsTrigger value="theme" className="rounded-full px-4"><Palette className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Theme</span></TabsTrigger>
-          {moduleState.enabled.merge_assistant && <TabsTrigger value="modules" className="rounded-full px-4"><Puzzle className="w-4 h-4 md:mr-2" /><span className="hidden md:inline">Advanced</span></TabsTrigger>}
+        <TabsList className="mb-6 w-full flex overflow-x-auto justify-start bg-muted/50 p-1 border border-border/30 rounded-xl">
+          <TabsTrigger value="profile" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><User className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Profile</span></TabsTrigger>
+          <TabsTrigger value="preferences" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Settings2 className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Preferences</span></TabsTrigger>
+          <TabsTrigger value="features" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Cpu className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Features</span></TabsTrigger>
+          <TabsTrigger value="visibility" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Eye className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Visibility</span></TabsTrigger>
+          <TabsTrigger value="theme" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Palette className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Theme</span></TabsTrigger>
+          {moduleState.enabled.merge_assistant && <TabsTrigger value="modules" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm"><Puzzle className="w-3.5 h-3.5 md:mr-1.5" /><span className="hidden md:inline">Advanced</span></TabsTrigger>}
+          <TabsTrigger value="philosophy" className="rounded-lg px-3.5 text-[13px] data-[state=active]:shadow-sm" asChild>
+            <Link href="/settings/philosophy">
+              <Compass className="w-3.5 h-3.5 md:mr-1.5" />
+              <span className="hidden md:inline">Philosophy</span>
+            </Link>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="animate-in fade-in-50">
@@ -125,7 +135,7 @@ export default function SettingsPage() {
                 {deployment.isSelfHosted && role === "admin" && (
                   <ListItem 
                     title="Admin Actions" 
-                    action={<Button variant="secondary" className="rounded-full" asChild><Link href="/settings">Open Modules</Link></Button>} 
+                    action={<Button variant="secondary" size="sm" className="rounded-lg" asChild><Link href="/settings">Open Modules</Link></Button>} 
                     isLast 
                   />
                 )}
@@ -135,6 +145,25 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="preferences" className="animate-in fade-in-50">
+          <SectionCard title="Experience Preset" description="Choose a pre-configured setup for your library experience.">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+              {(Object.keys(USER_SETTING_PRESETS) as UserSettingPresetId[]).map((id) => (
+                <button
+                  key={id}
+                  onClick={() => handleApplyUserPreset(id)}
+                  className={cn(
+                    "flex flex-col items-start gap-1 p-3 rounded-xl border transition-all text-left",
+                    "hover:bg-accent/50 active:scale-[0.98]",
+                    "border-border/50 bg-card"
+                  )}
+                >
+                  <p className="text-sm font-semibold">{USER_SETTING_PRESETS[id].title}</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{USER_SETTING_PRESETS[id].description}</p>
+                </button>
+              ))}
+            </div>
+          </SectionCard>
+
           <SectionCard title="Reader & Summaries" badge={moduleState.enabled.settings_sync ? 'State Synced' : 'Local Only'}>
             <div className="flex flex-col">
               <ListItem 
@@ -177,7 +206,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="p-4 bg-muted/30 border-t border-border/50 flex justify-end">
-              <Button variant="outline" onClick={resetSettings} className="rounded-full">
+              <Button variant="outline" size="sm" onClick={resetSettings} className="rounded-lg">
                 <RotateCcw className="w-4 h-4 mr-2" /> Reset
               </Button>
             </div>
@@ -191,7 +220,7 @@ export default function SettingsPage() {
                 <button 
                   key={presetId} 
                   className="flex-1 text-left p-4 rounded-xl hover:bg-muted focus:bg-muted transition-colors focus:outline-none" 
-                  onClick={() => applyPreset(presetId)}
+                  onClick={() => handleApplyFeaturePreset(presetId)}
                 >
                   <div className="font-medium text-[15px]">{preset.title}</div>
                   <div className="text-[13px] text-muted-foreground mt-1">{preset.description}</div>
@@ -199,10 +228,10 @@ export default function SettingsPage() {
               ))}
             </div>
             <div className="p-4 bg-muted/30 border-t border-border/50 flex flex-wrap gap-2 justify-end">
-              <Button type="button" variant="outline" onClick={resetDefaults} className="rounded-full">
+              <Button type="button" variant="outline" size="sm" onClick={resetDefaults} className="rounded-lg">
                 <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset
               </Button>
-              <Button type="button" variant="secondary" onClick={reopenOnboarding} className="rounded-full">
+              <Button type="button" variant="secondary" size="sm" onClick={reopenOnboarding} className="rounded-lg">
                 <WandSparkles className="w-3.5 h-3.5 mr-1.5" /> Onboarding
               </Button>
             </div>
@@ -226,6 +255,147 @@ export default function SettingsPage() {
                   />
                 )
               )}
+            </div>
+          </SectionCard>
+        </TabsContent>
+
+        <TabsContent value="visibility" className="animate-in fade-in-50">
+          <SectionCard title="Feature Visibility" description="Show or hide individual features across the entire app. Disabled features are completely removed from the interface.">
+            <div className="flex flex-col">
+              {/* Navigation & Global UI */}
+              <div className="px-1 pt-2 pb-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Navigation &amp; Global UI</p>
+              </div>
+              <ListItem
+                title="Command Palette"
+                description="Ctrl+K shortcut for quick navigation and global search."
+                action={<Switch checked={settings.enableCommandPalette} onCheckedChange={(v) => setSetting("enableCommandPalette", v)} />}
+              />
+              <ListItem
+                title="Scroll to Top"
+                description="Floating button to scroll back to the top of long pages."
+                action={<Switch checked={settings.enableScrollToTop} onCheckedChange={(v) => setSetting("enableScrollToTop", v)} />}
+              />
+              <ListItem
+                title="Advanced Search"
+                description="Advanced search dialog with extra filter options."
+                action={<Switch checked={settings.enableAdvancedSearch} onCheckedChange={(v) => setSetting("enableAdvancedSearch", v)} />}
+              />
+              <ListItem
+                title="Catalog Dropdown"
+                description="Authors & Series dropdown in the navigation bar."
+                action={<Switch checked={settings.enableCatalogDropdown} onCheckedChange={(v) => setSetting("enableCatalogDropdown", v)} />}
+                isLast
+              />
+
+              {/* Library Features */}
+              <div className="px-1 pt-6 pb-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Library</p>
+              </div>
+              <ListItem
+                title="Matching Inbox"
+                description="Import merge review inbox showing pending/conflicting books from sources."
+                action={<Switch checked={settings.enableMatchingInbox} onCheckedChange={(v) => setSetting("enableMatchingInbox", v)} />}
+              />
+              <ListItem
+                title="Bulk Actions"
+                description="Multi-select mode for batch delete, move, or status change operations."
+                action={<Switch checked={settings.enableBulkActions} onCheckedChange={(v) => setSetting("enableBulkActions", v)} />}
+              />
+              <ListItem
+                title="Connections"
+                description="External source connections management page."
+                action={<Switch checked={settings.enableConnections} onCheckedChange={(v) => setSetting("enableConnections", v)} />}
+                isLast
+              />
+
+              {/* Book Detail Features */}
+              <div className="px-1 pt-6 pb-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Book Detail Page</p>
+              </div>
+              <ListItem
+                title="Book Health Panel"
+                description="Warning cards showing missing metadata (cover, description, ISBN, genres)."
+                action={<Switch checked={settings.enableBookHealth} onCheckedChange={(v) => setSetting("enableBookHealth", v)} />}
+              />
+              <ListItem
+                title="Reading Timeline"
+                description="Visual timeline of reading status changes, progress milestones, and dates."
+                action={<Switch checked={settings.enableReadingTimeline} onCheckedChange={(v) => setSetting("enableReadingTimeline", v)} />}
+              />
+              <ListItem
+                title="Source Provenance"
+                description="Show which external sources a book was imported from and sync status."
+                action={<Switch checked={settings.enableSourceProvenance} onCheckedChange={(v) => setSetting("enableSourceProvenance", v)} />}
+              />
+              <ListItem
+                title="Book Summary"
+                description="AI-generated summary card on book detail pages."
+                action={<Switch checked={settings.enableBookSummary} onCheckedChange={(v) => setSetting("enableBookSummary", v)} />}
+              />
+              <ListItem
+                title="Chapters"
+                description="Chapter listing with progress indicators on book detail pages."
+                action={<Switch checked={settings.enableChapters} onCheckedChange={(v) => setSetting("enableChapters", v)} />}
+              />
+              <ListItem
+                title="Aliases"
+                description="Alternate title tracking and alias voting on book detail pages."
+                action={<Switch checked={settings.enableAliases} onCheckedChange={(v) => setSetting("enableAliases", v)} />}
+              />
+              <ListItem
+                title="Copy Buttons"
+                description="Copy ID, ISBN, and link buttons on book detail pages."
+                action={<Switch checked={settings.enableCopyButtons} onCheckedChange={(v) => setSetting("enableCopyButtons", v)} />}
+              />
+              <ListItem
+                title="Quick Actions Bar"
+                description="Mobile bottom bar with Read, Rate, Tag, and Note actions."
+                action={<Switch checked={settings.enableQuickActions} onCheckedChange={(v) => setSetting("enableQuickActions", v)} />}
+                isLast
+              />
+
+              {/* Tracker Features */}
+              <div className="px-1 pt-6 pb-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Tracker</p>
+              </div>
+              <ListItem
+                title="Reading Insights"
+                description="Stats cards showing reading velocity, streaks, and distribution on the tracker page."
+                action={<Switch checked={settings.enableReadingInsights} onCheckedChange={(v) => setSetting("enableReadingInsights", v)} />}
+                isLast
+              />
+
+              {/* Community Sub-features */}
+              <div className="px-1 pt-6 pb-1">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Community</p>
+              </div>
+              <ListItem
+                title="Community Hub"
+                description="Community page with activity feed, reviews, and goals."
+                action={<Switch checked={settings.enableCommunity} onCheckedChange={(v) => setSetting("enableCommunity", v)} />}
+              />
+              <ListItem
+                title="Reviews"
+                description="Book reviews within the community section."
+                action={<Switch checked={settings.enableReviews} onCheckedChange={(v) => setSetting("enableReviews", v)} disabled={!settings.enableCommunity} />}
+              />
+              <ListItem
+                title="Activity Feed"
+                description="Real-time feed of community reading activity."
+                action={<Switch checked={settings.enableActivityFeed} onCheckedChange={(v) => setSetting("enableActivityFeed", v)} disabled={!settings.enableCommunity} />}
+              />
+              <ListItem
+                title="Reading Goals"
+                description="Set and track reading goals within the community."
+                action={<Switch checked={settings.enableGoals} onCheckedChange={(v) => setSetting("enableGoals", v)} disabled={!settings.enableCommunity} />}
+              />
+              <ListItem
+                title="Tracking Quantity"
+                description="Pages/words read metrics and velocity tracking."
+                action={<Switch checked={settings.enableTrackingQuantity} onCheckedChange={(v) => setSetting("enableTrackingQuantity", v)} disabled={!settings.enableCommunity} />}
+                isLast
+              />
             </div>
           </SectionCard>
         </TabsContent>

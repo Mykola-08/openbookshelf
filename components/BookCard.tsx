@@ -12,10 +12,10 @@ interface BookCardProps {
 const SyncIcon = ({ syncState }: { syncState: string | undefined }) => {
   const iconClass = "w-3 h-3";
   switch (syncState) {
-    case 'synced': return <CheckCircle className={`${iconClass} text-green-600`} />;
-    case 'pending': return <RefreshCw className={`${iconClass} text-yellow-600`} />;
-    case 'locked': return <Lock className={`${iconClass} text-gray-500`} />;
-    case 'conflict': return <AlertTriangle className={`${iconClass} text-red-600`} />;
+    case 'synced': return <CheckCircle className={`${iconClass} text-status-success`} />;
+    case 'pending': return <RefreshCw className={`${iconClass} text-status-warning`} />;
+    case 'locked': return <Lock className={`${iconClass} text-muted-foreground`} />;
+    case 'conflict': return <AlertTriangle className={`${iconClass} text-status-error`} />;
     default: return null;
   }
 };
@@ -24,15 +24,19 @@ export default function BookCard({ book, source }: BookCardProps) {
   
 
   return (
-    <div className="relative group bg-card border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+    <div className="relative group bg-card border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all focus-within:ring-2 focus-within:ring-primary/50 focus-within:ring-offset-2" role="article" aria-label={`${book.title} by ${book.authors.join(', ')}`}>
       <div className="aspect-[2/3] bg-muted relative">
         {book.coverUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img 
             src={book.coverUrl} 
-            alt={book.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            alt={`Cover of ${book.title}`}
+            className="w-full h-full object-cover transition-transform group-hover:scale-105"
             loading="lazy"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.style.display = 'none';
+            }}
           />
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground/50 text-sm font-medium">
@@ -62,7 +66,7 @@ export default function BookCard({ book, source }: BookCardProps) {
           {book.rating ? (
              <div className="flex items-center gap-1 bg-muted/50 px-1.5 py-0.5 rounded-md">
                <span className="text-xs font-semibold text-foreground">{book.rating}</span>
-               <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+               <Star className="w-3 h-3 text-status-warning fill-status-warning" />
              </div>
           ) : null}
         </div>
@@ -71,7 +75,7 @@ export default function BookCard({ book, source }: BookCardProps) {
         {book.status === 'reading' && book.progress !== undefined && (
           <div className="mt-3 w-full bg-secondary rounded-full h-1.5 overflow-hidden">
             <div 
-              className="bg-primary h-full rounded-full transition-all duration-300" 
+              className="bg-primary h-full rounded-full transition-all" 
               style={{ width: `${Math.min(book.progress, 100)}%` }}
             ></div>
           </div>

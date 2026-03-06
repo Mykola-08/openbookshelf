@@ -3,11 +3,26 @@
 OpenBookshelf is a modular, self-hosted personal library, e-reader, and reading progress tracker. It allows you to import OPDS catalogs, upload local EPUBs, read directly in the browser across all your devices, and synchronize your progress seamlessly.
 
 ## Core Features
-1. **Internal Browser Reader**: Fully customizable e-reader (themes, font scaling, location memory) powered by `epubjs`.
-2. **OPDS Discovery Engine**: Built-in support to browse public domain libraries (Project Gutenberg, Standard Ebooks, Feedbooks) and automatically import books to your local storage.
+1. **Internal Browser Reader**: Fully customizable e-reader (themes, font scaling, line height, font family, location memory, bookmarks) powered by `epubjs`.
+2. **OPDS Discovery & Recommendations Engine**: Built-in support to browse public domain libraries (Project Gutenberg, Standard Ebooks, Feedbooks), integrate custom catalogs, and discover new books based on your reading history and trending open-source data.
 3. **Alias-Aware Merge Import**: Detect near-duplicate titles, propose aliases with source attribution, and support community voting for approval.
-4. **Modular Architecture**: Toggle features on and off (e.g., use only the tracker, without the local reader).
-5. **Reading Tracking** (Kanban Style): Manage your library states natively (Currently Reading, Completed, Dropped, Plan to Read).
+4. **Modular Architecture & Hyper-Personalization**: Toggle features on and off (e.g., use only the tracker without the local reader, or switch between "Minimalist" and "Power Reader" user presets). Your environment adapts to your workflow.
+5. **Reading Tracking & Insights** (Kanban Style): Manage your library states natively with drag-and-drop. View detailed reading insights, yearly goals, reading streaks, and a comprehensive reading timeline.
+
+---
+
+## Design Philosophy
+
+OpenBookshelf is built on a set of core principles that prioritize the reader's focus, privacy, and personal workflow. Inspired by the "Digital Garden" concept, our goal is to provide a powerful yet invisible environment for deep reading. 
+
+Read more in our [Design Philosophy](PHILOSOPHY.md) document.
+
+- **Minimalism by Default**: Interfaces start small. Complexity is a choice, not a mandate.
+- **Hyper-Personalization**: From font pairings to database schema, the system adapts to your unique workflow.
+- **Privacy and Ownership**: Your data belongs to you. We favor local storage and self-hosted options.
+- **Performance over Polish**: A fast, slightly rugged interface is better than a slow, beautiful one.
+- **Modular Complexity**: Advanced features are hidden behind modules to reduce mental overhead.
+- **Digital Garden**: Cultivate your library over time. It's a place to think, not just a warehouse to store files.
 
 ---
 
