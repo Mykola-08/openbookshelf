@@ -2,11 +2,14 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { createDemoSupabaseClient, isDemoSupabaseEnabled } from './demo-client'
+import { resolveDatabaseProvider } from '@/lib/config/database'
 
 type ServerSupabaseClient = ReturnType<typeof createServerClient>;
 
 export async function createClient() {
-  if (isDemoSupabaseEnabled()) {
+  const provider = resolveDatabaseProvider()
+
+  if (isDemoSupabaseEnabled() || provider === 'demo') {
     return createDemoSupabaseClient() as unknown as ServerSupabaseClient
   }
 

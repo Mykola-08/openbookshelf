@@ -91,7 +91,19 @@ NEXT_PUBLIC_SELF_HOSTED=false
 # Set to 'true' to run with local in-memory demo Supabase client
 # (also auto-enabled if Supabase URL/key are missing)
 NEXT_PUBLIC_SUPABASE_DEMO=false
+# Optional database provider override: supabase | firebase | demo
+# If omitted, app auto-detects from available env vars.
+NEXT_PUBLIC_DB_PROVIDER=supabase
+
+# Firebase compatibility env hints (used for provider auto-detection)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 ```
+
+Provider behavior:
+- `supabase`: uses Supabase directly (requires URL + anon key).
+- `firebase`: currently resolves to the local compatibility engine to keep app APIs consistent while Firebase credentials/settings are surfaced in runtime diagnostics.
+- `demo`: forces local demo client mode.
 
 ## Local Demo Mode
 
@@ -127,6 +139,6 @@ Admins can also define custom modules from `/modules`. Custom modules are persis
 - Framework: Next.js 16 (App Router)
 - UI: Shadcn UI + Tailwind CSS
 - Reader Engine: react-reader (`epubjs`)
-- Database: Supabase (PostgreSQL) + Auth
+- Database: Unified provider runtime (Supabase-first, Firebase-compatible fallback, local demo mode)
 ## Contributing
 We welcome contributions! Feel free to open issues or submit pull requests.

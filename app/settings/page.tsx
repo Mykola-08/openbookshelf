@@ -23,6 +23,7 @@ import { useFeatureFlags } from "@/lib/hooks/use-feature-flags";
 import { useUserSettings } from "@/lib/hooks/use-user-settings";
 import { openOnboardingDialog } from "@/components/OnboardingDialog";
 import { deployment } from "@/lib/config/deployment";
+import { getDatabaseRuntimeInfo } from "@/lib/config/database";
 import { BUILTIN_MODULES } from "@/lib/config/modules";
 import { useModules } from "@/lib/hooks/use-modules";
 import { cn } from "@/lib/utils";
@@ -80,6 +81,7 @@ export default function SettingsPage() {
   }, []);
 
   const activeMode = useMemo(() => getFeatureModeLabel(flags), [flags]);
+  const dbRuntime = useMemo(() => getDatabaseRuntimeInfo(), []);
 
   const toggleFlag = (key: FeatureFlagKey) => setFeatureFlag(key, !flags[key]);
   const handleApplyFeaturePreset = (id: FeaturePresetId) => applyFeaturePreset(id);
@@ -141,6 +143,18 @@ export default function SettingsPage() {
                 )}
               </div>
             )}
+          </SectionCard>
+
+          <SectionCard title="Database Runtime" description="Unified data layer with sensible defaults and provider compatibility.">
+            <div className="flex flex-col">
+              <ListItem title="Requested Provider" description={dbRuntime.requestedProvider} />
+              <ListItem title="Resolved Provider" description={dbRuntime.providerLabel} />
+              <ListItem title="Supabase Credentials" description={dbRuntime.hasSupabaseEnv ? "Configured" : "Missing"} />
+              <ListItem title="Firebase Credentials" description={dbRuntime.hasFirebaseEnv ? "Configured" : "Missing"} isLast={!dbRuntime.fallbackReason} />
+              {dbRuntime.fallbackReason && (
+                <ListItem title="Compatibility Note" description={dbRuntime.fallbackReason} isLast />
+              )}
+            </div>
           </SectionCard>
         </TabsContent>
 
