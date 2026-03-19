@@ -112,7 +112,7 @@ const rowToFields = (row: Row): any =>
   Object.fromEntries(Object.entries(row).map(([k, v]) => [k, toFirestoreValue(v)]));
 
 class FirebaseQueryBuilder implements PromiseLike<CompatResult<unknown>> {
-  private filters: Array<(row: Row) => boolean> = [];
+  private filters: Array<{ column: string; value: unknown }> = [];
   private selected: string | null = null;
   private op: "select" | "insert" | "update" | "upsert" | "delete" = "select";
   private payload: Row[] = [];
@@ -153,39 +153,7 @@ class FirebaseQueryBuilder implements PromiseLike<CompatResult<unknown>> {
   }
 
   eq(column: string, value: unknown): this {
-    this.filters.push((row) => row[column] === value);
-    return this;
-  }
-
-  ilike(column: string, pattern: string): this {
-    const regex = new RegExp(`^${pattern.replace(/[%]/g, ".*").replace(/_/g, ".")}$`, "i");
-    this.filters.push((row) => typeof row[column] === "string" && regex.test(String(row[column])));
-    return this;
-  }
-
-  in(column: string, values: unknown[]): this {
-    const set = new Set(values.map((value) => String(value)));
-    this.filters.push((row) => set.has(String(row[column])));
-    return this;
-  }
-
-  or(expression: string): this {
-    const parts = expression.split(",").map((part) => part.trim()).filter(Boolean);
-    const checks = parts
-      .map((part) => {
-        const [column, op, ...rest] = part.split(".");
-        if (!column || !op || !rest.length) return null;
-        const rawValue = rest.join(".").replace(/^"|"$/g, "");
-        if (op === "eq") {
-          return (row: Row) => String(row[column]) === rawValue;
-        }
-        return null;
-      })
-      .filter(Boolean) as Array<(row: Row) => boolean>;
-
-    if (checks.length) {
-      this.filters.push((row) => checks.some((check) => check(row)));
-    }
+    this.filters.push({ column, value });
     return this;
   }
 
@@ -224,8 +192,8 @@ class FirebaseQueryBuilder implements PromiseLike<CompatResult<unknown>> {
       if (this.op === "delete") return { data: await this.client.delete(this.table, this.filters), error: null };
 
       let rows = await this.client.select(this.table);
-      for (const predicate of this.filters) {
-        rows = rows.filter((row) => predicate(row));
+      for (const rule of this.filters) {
+        rows = rows.filter((row) => row[rule.column] === rule.value);
       }
 
       if (this.orderBy) {
@@ -279,6 +247,12 @@ class FirebaseRestCompatClient {
       return;
     }
 
+    if (isServer) {
+      this.token = null;
+      this.user = { id: FIREBASE_SERVER_USER_ID, email: FIREBASE_SERVER_USER_EMAIL };
+      return;
+    }
+
     let endpoint = `${IDENTITY_BASE}/accounts:signUp?key=${FIREBASE_API_KEY}`;
     let body: Record<string, unknown> = { returnSecureToken: true };
 
@@ -306,8 +280,8 @@ class FirebaseRestCompatClient {
 
     this.token = data.idToken as string;
     this.user = {
-      id: String(data.localId || FIREBASE_SERVER_USER_ID),
-      email: String(data.email || FIREBASE_SERVER_USER_EMAIL),
+      id: String(data.localId || "firebase-user"),
+      email: String(data.email || `${data.localId}@firebase.local`),
     };
 
     writeBrowserSession(this.token, this.user);
@@ -368,16 +342,14 @@ class FirebaseRestCompatClient {
     return created;
   }
 
-  async upsert(table: string, payload: Row[], filters: Array<(row: Row) => boolean>) {
+  async upsert(table: string, payload: Row[], filters: Array<{ column: string; value: unknown }>) {
     if (!payload.length) return [];
     const rows = await this.select(table);
     const updated: Row[] = [];
 
     for (const row of payload) {
-      const keyFilter = filters.length
-        ? (candidate: Row) => filters.every((predicate) => predicate(candidate))
-        : (candidate: Row) => String(candidate.id ?? "") === String(row.id ?? "");
-      const match = rows.find((candidate) => keyFilter(candidate));
+      const keyFilter = filters.length ? filters : [{ column: "id", value: row.id }];
+      const match = rows.find((candidate) => keyFilter.every((f) => candidate[f.column] === (row[f.column] ?? f.value)));
 
       if (match?.id) {
         const result = await this.patchDoc(table, String(match.id), { ...match, ...row });
@@ -391,9 +363,9 @@ class FirebaseRestCompatClient {
     return updated;
   }
 
-  async update(table: string, patch: Row, filters: Array<(row: Row) => boolean>) {
+  async update(table: string, patch: Row, filters: Array<{ column: string; value: unknown }>) {
     const rows = await this.select(table);
-    const matches = rows.filter((candidate) => filters.every((predicate) => predicate(candidate)));
+    const matches = rows.filter((candidate) => filters.every((f) => candidate[f.column] === f.value));
     const updated: Row[] = [];
     for (const row of matches) {
       if (!row.id) continue;
@@ -402,10 +374,10 @@ class FirebaseRestCompatClient {
     return updated;
   }
 
-  async delete(table: string, filters: Array<(row: Row) => boolean>) {
+  async delete(table: string, filters: Array<{ column: string; value: unknown }>) {
     await this.ensureAuth();
     const rows = await this.select(table);
-    const matches = rows.filter((candidate) => filters.every((predicate) => predicate(candidate)));
+    const matches = rows.filter((candidate) => filters.every((f) => candidate[f.column] === f.value));
     for (const row of matches) {
       if (!row.id) continue;
       await fetch(`${FIRESTORE_BASE}/${table}/${row.id}`, {

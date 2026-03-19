@@ -196,6 +196,34 @@ For existing libraries, run a one-time status normalization job:
 npm run sync:reading-status
 ```
 
+```
+
+Provider behavior:
+- `supabase`: uses Supabase directly (requires URL + anon key).
+- `firebase`: uses a Firebase REST compatibility client (Firestore + Identity Toolkit) with automatic anonymous sign-in by default (`NEXT_PUBLIC_FIREBASE_AUTO_ANON=true`).
+- `demo`: forces local demo client mode.
+
+### Firebase setup checklist
+1. Create a Firebase project and enable **Firestore Database**.
+2. Enable **Authentication** (Email/Password or Anonymous).
+3. Add API key + project ID to env vars shown above.
+4. If you want deterministic server user context for SSR/admin flows, set `FIREBASE_SERVER_USER_ID` and `FIREBASE_SERVER_USER_EMAIL`.
+5. Optional: set `FIREBASE_AUTH_EMAIL` + `FIREBASE_AUTH_PASSWORD` to use a fixed account instead of anonymous sign-in.
+
+## Reading Status Auto-Sync (New)
+
+OpenBookshelf now auto-synchronizes reading state while reading:
+- updates `reading_location`
+- updates `progress` as percent
+- transitions `toread/paused -> reading` once progress starts
+- transitions to `finished` when progress reaches ~100%
+
+For existing libraries, run a one-time status normalization job:
+
+```bash
+npm run sync:reading-status
+```
+
 Required env vars for the script:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
