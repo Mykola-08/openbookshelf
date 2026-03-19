@@ -184,3 +184,9 @@ Admins can also define custom modules from `/modules`. Custom modules are persis
 - Database: Unified provider runtime (Supabase-first, Firebase-compatible fallback, local demo mode)
 ## Contributing
 We welcome contributions! Feel free to open issues or submit pull requests.
+
+## Repository Housekeeping
+
+The repository was cleaned to remove one-off recovery/patch helper scripts and scratch text files that had accumulated at the project root.
+
+If you need to inspect those historical artifacts, use Git history (e.g., `git log -- <filename>` or `git show <commit>:<filename>`).

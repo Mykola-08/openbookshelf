@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local one-off cleanup/rewrite helper artifacts (root-only)
+/fix*.py
+/fix*.js
+/rewrite*.py
+/recover*.py
+/patch*.py
+/patch*.js
+/quick_fix.js
+/quick_fixes.py
+/*_settings*.txt
+/found_page.txt
+/test.txt
+/hello.txt
