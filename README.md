@@ -105,6 +105,16 @@ Provider behavior:
 - `firebase`: currently resolves to the local compatibility engine to keep app APIs consistent while Firebase credentials/settings are surfaced in runtime diagnostics.
 - `demo`: forces local demo client mode.
 
+## AI Personalization (New)
+
+In **Settings → Preferences**, you can now customize AI behavior per user (stored in `user_settings`):
+- provider preference (`auto`, `openrouter`, `openai`, `google`)
+- optional model override
+- generation temperature
+- chapter summary length (`short`, `balanced`, `detailed`)
+
+These settings are used by AI server actions (`generateBookDescription`, `generateChapterSummary`) and fall back to environment defaults when not configured.
+
 ## Local Demo Mode
 
 For local product demos without a running Supabase project:

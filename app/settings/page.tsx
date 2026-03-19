@@ -216,6 +216,62 @@ export default function SettingsPage() {
                     onCheckedChange={(checked) => setSetting("autoPrefetch", checked)}
                   />
                 }
+              />
+              <ListItem
+                title="AI Provider"
+                description="Choose which provider to prioritize for generated descriptions and summaries."
+                action={
+                  <select
+                    value={settings.aiProvider}
+                    onChange={(e) => setSetting("aiProvider", e.target.value as any)}
+                    className="h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  >
+                    <option value="auto">Auto</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="google">Google</option>
+                  </select>
+                }
+              />
+              <ListItem
+                title="AI Model Override"
+                description="Optional model string. Leave empty to use environment defaults."
+                action={
+                  <input
+                    type="text"
+                    value={settings.aiModel}
+                    onChange={(e) => setSetting("aiModel", e.target.value)}
+                    placeholder="e.g. gpt-4o-mini"
+                    className="h-9 w-56 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  />
+                }
+              />
+              <ListItem
+                title="AI Temperature"
+                description="Creativity level from 0.0 (deterministic) to 1.0 (more varied)."
+                action={
+                  <input
+                    type="number" min={0} max={1} step={0.1}
+                    value={settings.aiTemperature}
+                    onChange={(e) => setSetting("aiTemperature", Number(e.target.value))}
+                    className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus:ring-2 focus:ring-primary focus:outline-none"
+                  />
+                }
+              />
+              <ListItem
+                title="AI Summary Length"
+                description="Controls how detailed chapter summaries should be."
+                action={
+                  <select
+                    value={settings.aiSummaryLength}
+                    onChange={(e) => setSetting("aiSummaryLength", e.target.value as any)}
+                    className="h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  >
+                    <option value="short">Short</option>
+                    <option value="balanced">Balanced</option>
+                    <option value="detailed">Detailed</option>
+                  </select>
+                }
                 isLast
               />
             </div>
