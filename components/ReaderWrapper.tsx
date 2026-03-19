@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookmarksPanel } from "@/components/BookmarksPanel";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/utils/supabase/client";
+import { resolveReadingStatus } from "@/lib/sync/reading-status";
 import { useDebouncedCallback } from "use-debounce";
 
 const FONT_FAMILIES = [
@@ -76,10 +77,7 @@ export function ReaderWrapper({ url, bookId, title, initialLocation }: ReaderWra
     }
   }, [theme]);
   
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClient();
   
   const mounted = useRef(false);
 
@@ -93,32 +91,59 @@ export function ReaderWrapper({ url, bookId, title, initialLocation }: ReaderWra
     saveReaderPrefs({ theme, fontSize: fontSize[0], fontFamily, lineHeight: lineHeight[0] });
   }, [theme, fontSize, fontFamily, lineHeight]);
 
-  const saveLocation = useDebouncedCallback(async (newLocation: string | number) => {
+  const saveReadingState = useDebouncedCallback(async (nextLocation: string | number | null, nextProgressPercent: number) => {
     if (!mounted.current) return;
-    
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Update the user's reading position
+      const { data: existing } = await supabase
+        .from("user_books")
+        .select("id, status, started_at, finished_at")
+        .eq("user_id", user.id)
+        .eq("book_id", bookId)
+        .maybeSingle();
+
+      const resolved = resolveReadingStatus({
+        currentStatus: existing?.status,
+        progressPercent: nextProgressPercent,
+        startedAt: existing?.started_at,
+        finishedAt: existing?.finished_at,
+      });
+
       await supabase
         .from("user_books")
-        .update({ 
-            reading_location: newLocation.toString(),
-            updated_at: new Date().toISOString()
-        })
-        .eq("user_id", user.id)
-        .eq("book_id", bookId);
-        
+        .upsert(
+          {
+            user_id: user.id,
+            book_id: bookId,
+            status: resolved.nextStatus,
+            progress: Math.round(nextProgressPercent),
+            progress_unit: "percent",
+            started_at: resolved.startedAt,
+            finished_at: resolved.finishedAt,
+            reading_location: nextLocation ? String(nextLocation) : null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id,book_id" }
+        );
     } catch (err) {
-      console.error("Failed to save reading location:", err);
+      console.error("Failed to save reading state:", err);
     }
-  }, 2000);
+  }, 1500);
 
   const handleLocationChange = (newLocation: string | number) => {
     setLocation(newLocation);
-    saveLocation(newLocation);
+    saveReadingState(newLocation, progress.percentage);
   };
+
+  useEffect(() => {
+    if (!location && progress.percentage <= 0) return;
+    saveReadingState(location, progress.percentage);
+  }, [location, progress.percentage, saveReadingState]);
 
   const getThemeIcon = () => {
     if (theme === 'dark') return <Moon className="w-4 h-4" />;

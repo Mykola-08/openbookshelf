@@ -1,7 +1,6 @@
 import { CommandPalette } from '@/components/CommandPalette';
 import { Toaster } from 'sonner';
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
@@ -9,14 +8,7 @@ import { AppThemeRuntime } from "@/components/AppThemeRuntime";
 import { DemoModeBanner } from "@/components/DemoModeBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
 export const dynamic = 'force-dynamic';
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "OpenBookshelf",
@@ -55,7 +47,7 @@ export default function RootLayout({
     : "missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY";
 
   return (
-    <html lang="en" className={`${inter.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body
         className="font-sans antialiased flex flex-col min-h-screen app-shell"
       >

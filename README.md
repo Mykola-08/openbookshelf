@@ -91,7 +91,61 @@ NEXT_PUBLIC_SELF_HOSTED=false
 # Set to 'true' to run with local in-memory demo Supabase client
 # (also auto-enabled if Supabase URL/key are missing)
 NEXT_PUBLIC_SUPABASE_DEMO=false
+# Optional database provider override: supabase | firebase | demo
+# If omitted, app auto-detects from available env vars.
+NEXT_PUBLIC_DB_PROVIDER=supabase
+
+# Firebase compatibility env hints (used for provider auto-detection)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_AUTO_ANON=true
+
+# Optional auth for Firebase REST compatibility mode
+FIREBASE_AUTH_EMAIL=
+FIREBASE_AUTH_PASSWORD=
+FIREBASE_SERVER_USER_ID=
+FIREBASE_SERVER_USER_EMAIL=
 ```
+
+Provider behavior:
+- `supabase`: uses Supabase directly (requires URL + anon key).
+- `firebase`: uses a Firebase REST compatibility client (Firestore + Identity Toolkit) with automatic anonymous sign-in by default (`NEXT_PUBLIC_FIREBASE_AUTO_ANON=true`).
+- `demo`: forces local demo client mode.
+
+### Firebase setup checklist
+1. Create a Firebase project and enable **Firestore Database**.
+2. Enable **Authentication** (Email/Password or Anonymous).
+3. Add API key + project ID to env vars shown above.
+4. If you want deterministic server user context for SSR/admin flows, set `FIREBASE_SERVER_USER_ID` and `FIREBASE_SERVER_USER_EMAIL`.
+5. Optional: set `FIREBASE_AUTH_EMAIL` + `FIREBASE_AUTH_PASSWORD` to use a fixed account instead of anonymous sign-in.
+
+## Reading Status Auto-Sync (New)
+
+OpenBookshelf now auto-synchronizes reading state while reading:
+- updates `reading_location`
+- updates `progress` as percent
+- transitions `toread/paused -> reading` once progress starts
+- transitions to `finished` when progress reaches ~100%
+
+For existing libraries, run a one-time status normalization job:
+
+```bash
+npm run sync:reading-status
+```
+
+Required env vars for the script:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+## AI Personalization (New)
+
+In **Settings → Preferences**, you can now customize AI behavior per user (stored in `user_settings`):
+- provider preference (`auto`, `openrouter`, `openai`, `google`)
+- optional model override
+- generation temperature
+- chapter summary length (`short`, `balanced`, `detailed`)
+
+These settings are used by AI server actions (`generateBookDescription`, `generateChapterSummary`) and fall back to environment defaults when not configured.
 
 ## Local Demo Mode
 
@@ -127,6 +181,6 @@ Admins can also define custom modules from `/modules`. Custom modules are persis
 - Framework: Next.js 16 (App Router)
 - UI: Shadcn UI + Tailwind CSS
 - Reader Engine: react-reader (`epubjs`)
-- Database: Supabase (PostgreSQL) + Auth
+- Database: Unified provider runtime (Supabase-first, Firebase-compatible fallback, local demo mode)
 ## Contributing
 We welcome contributions! Feel free to open issues or submit pull requests.
