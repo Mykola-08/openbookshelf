@@ -23,6 +23,7 @@ import { useFeatureFlags } from "@/lib/hooks/use-feature-flags";
 import { useUserSettings } from "@/lib/hooks/use-user-settings";
 import { openOnboardingDialog } from "@/components/OnboardingDialog";
 import { deployment } from "@/lib/config/deployment";
+import { getDatabaseRuntimeInfo } from "@/lib/config/database";
 import { BUILTIN_MODULES } from "@/lib/config/modules";
 import { useModules } from "@/lib/hooks/use-modules";
 import { cn } from "@/lib/utils";
@@ -80,6 +81,7 @@ export default function SettingsPage() {
   }, []);
 
   const activeMode = useMemo(() => getFeatureModeLabel(flags), [flags]);
+  const dbRuntime = useMemo(() => getDatabaseRuntimeInfo(), []);
 
   const toggleFlag = (key: FeatureFlagKey) => setFeatureFlag(key, !flags[key]);
   const handleApplyFeaturePreset = (id: FeaturePresetId) => applyFeaturePreset(id);
@@ -142,6 +144,18 @@ export default function SettingsPage() {
               </div>
             )}
           </SectionCard>
+
+          <SectionCard title="Database Runtime" description="Unified data layer with sensible defaults and provider compatibility.">
+            <div className="flex flex-col">
+              <ListItem title="Requested Provider" description={dbRuntime.requestedProvider} />
+              <ListItem title="Resolved Provider" description={dbRuntime.providerLabel} />
+              <ListItem title="Supabase Credentials" description={dbRuntime.hasSupabaseEnv ? "Configured" : "Missing"} />
+              <ListItem title="Firebase Credentials" description={dbRuntime.hasFirebaseEnv ? "Configured" : "Missing"} isLast={!dbRuntime.fallbackReason} />
+              {dbRuntime.fallbackReason && (
+                <ListItem title="Compatibility Note" description={dbRuntime.fallbackReason} isLast />
+              )}
+            </div>
+          </SectionCard>
         </TabsContent>
 
         <TabsContent value="preferences" className="animate-in fade-in-50">
@@ -201,6 +215,62 @@ export default function SettingsPage() {
                     checked={settings.autoPrefetch}
                     onCheckedChange={(checked) => setSetting("autoPrefetch", checked)}
                   />
+                }
+              />
+              <ListItem
+                title="AI Provider"
+                description="Choose which provider to prioritize for generated descriptions and summaries."
+                action={
+                  <select
+                    value={settings.aiProvider}
+                    onChange={(e) => setSetting("aiProvider", e.target.value as any)}
+                    className="h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  >
+                    <option value="auto">Auto</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="google">Google</option>
+                  </select>
+                }
+              />
+              <ListItem
+                title="AI Model Override"
+                description="Optional model string. Leave empty to use environment defaults."
+                action={
+                  <input
+                    type="text"
+                    value={settings.aiModel}
+                    onChange={(e) => setSetting("aiModel", e.target.value)}
+                    placeholder="e.g. gpt-4o-mini"
+                    className="h-9 w-56 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  />
+                }
+              />
+              <ListItem
+                title="AI Temperature"
+                description="Creativity level from 0.0 (deterministic) to 1.0 (more varied)."
+                action={
+                  <input
+                    type="number" min={0} max={1} step={0.1}
+                    value={settings.aiTemperature}
+                    onChange={(e) => setSetting("aiTemperature", Number(e.target.value))}
+                    className="h-9 w-24 rounded-lg border border-input bg-background px-3 py-1 text-sm text-right focus:ring-2 focus:ring-primary focus:outline-none"
+                  />
+                }
+              />
+              <ListItem
+                title="AI Summary Length"
+                description="Controls how detailed chapter summaries should be."
+                action={
+                  <select
+                    value={settings.aiSummaryLength}
+                    onChange={(e) => setSetting("aiSummaryLength", e.target.value as any)}
+                    className="h-9 rounded-lg border border-input bg-background px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  >
+                    <option value="short">Short</option>
+                    <option value="balanced">Balanced</option>
+                    <option value="detailed">Detailed</option>
+                  </select>
                 }
                 isLast
               />
