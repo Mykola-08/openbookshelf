@@ -98,12 +98,26 @@ NEXT_PUBLIC_DB_PROVIDER=supabase
 # Firebase compatibility env hints (used for provider auto-detection)
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_AUTO_ANON=true
+
+# Optional auth for Firebase REST compatibility mode
+FIREBASE_AUTH_EMAIL=
+FIREBASE_AUTH_PASSWORD=
+FIREBASE_SERVER_USER_ID=
+FIREBASE_SERVER_USER_EMAIL=
 ```
 
 Provider behavior:
 - `supabase`: uses Supabase directly (requires URL + anon key).
-- `firebase`: currently resolves to the local compatibility engine to keep app APIs consistent while Firebase credentials/settings are surfaced in runtime diagnostics.
+- `firebase`: uses a Firebase REST compatibility client (Firestore + Identity Toolkit) with automatic anonymous sign-in by default (`NEXT_PUBLIC_FIREBASE_AUTO_ANON=true`).
 - `demo`: forces local demo client mode.
+
+### Firebase setup checklist
+1. Create a Firebase project and enable **Firestore Database**.
+2. Enable **Authentication** (Email/Password or Anonymous).
+3. Add API key + project ID to env vars shown above.
+4. If you want deterministic server user context for SSR/admin flows, set `FIREBASE_SERVER_USER_ID` and `FIREBASE_SERVER_USER_EMAIL`.
+5. Optional: set `FIREBASE_AUTH_EMAIL` + `FIREBASE_AUTH_PASSWORD` to use a fixed account instead of anonymous sign-in.
 
 ## Reading Status Auto-Sync (New)
 

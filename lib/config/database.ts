@@ -58,6 +58,18 @@ export const getDatabaseRuntimeInfo = (): DatabaseRuntimeInfo => {
   }
 
   if (requestedProvider === "firebase") {
+    if (hasFirebaseEnv) {
+      return {
+        requestedProvider,
+        resolvedProvider: "firebase",
+        providerLabel: providerLabels.firebase,
+        hasSupabaseEnv,
+        hasFirebaseEnv,
+        isCloud: true,
+        fallbackReason: null,
+      };
+    }
+
     return {
       requestedProvider,
       resolvedProvider: "demo",
@@ -65,8 +77,7 @@ export const getDatabaseRuntimeInfo = (): DatabaseRuntimeInfo => {
       hasSupabaseEnv,
       hasFirebaseEnv,
       isCloud: false,
-      fallbackReason:
-        "Firebase mode currently runs through the local compatibility engine to preserve the app's Supabase-shaped API contract.",
+      fallbackReason: "Firebase requested, but required env vars are missing.",
     };
   }
 
@@ -97,13 +108,12 @@ export const getDatabaseRuntimeInfo = (): DatabaseRuntimeInfo => {
   if (hasFirebaseEnv) {
     return {
       requestedProvider,
-      resolvedProvider: "demo",
-      providerLabel: providerLabels.demo,
+      resolvedProvider: "firebase",
+      providerLabel: providerLabels.firebase,
       hasSupabaseEnv,
       hasFirebaseEnv,
-      isCloud: false,
-      fallbackReason:
-        "Firebase credentials found, but the app currently runs via the local compatibility engine until a native Firebase adapter is enabled.",
+      isCloud: true,
+      fallbackReason: null,
     };
   }
 
