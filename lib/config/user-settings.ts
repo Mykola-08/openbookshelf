@@ -1,4 +1,6 @@
 export type QuickImportMode = "ask" | "auto_merge" | "always_new";
+export type AIProvider = "auto" | "openrouter" | "openai" | "google";
+export type AISummaryLength = "short" | "balanced" | "detailed";
 
 /**
  * Central user preferences model for advanced customization.
@@ -17,6 +19,10 @@ export interface UserSettings {
   aliasVoteQuorum: number;
   askBeforeAliasMerge: boolean;
   quickImportMode: QuickImportMode;
+  aiProvider: AIProvider;
+  aiModel: string;
+  aiTemperature: number;
+  aiSummaryLength: AISummaryLength;
   // Reader specifics
   fontSize: number;
   fontFamily: "sans" | "serif" | "mono";
@@ -63,6 +69,7 @@ export const USER_SETTING_PRESETS: Record<
       enableTrackingQuantity: false,
       autoPrefetch: false,
       summaryDepth: "short",
+      aiSummaryLength: "short",
       enableBookHealth: false,
       enableReadingTimeline: false,
       enableReadingInsights: false,
@@ -87,6 +94,7 @@ export const USER_SETTING_PRESETS: Record<
       enableTrackingQuantity: false,
       autoPrefetch: true,
       summaryDepth: "balanced",
+      aiSummaryLength: "balanced",
       enableBookHealth: false,
       enableReadingTimeline: true,
       enableReadingInsights: true,
@@ -111,6 +119,7 @@ export const USER_SETTING_PRESETS: Record<
       enableTrackingQuantity: true,
       autoPrefetch: true,
       summaryDepth: "deep",
+      aiSummaryLength: "detailed",
       enableBookHealth: true,
       enableReadingTimeline: true,
       enableReadingInsights: true,
@@ -134,6 +143,7 @@ export const USER_SETTING_PRESETS: Record<
       enableActivityFeed: false,
       enableTrackingQuantity: false,
       summaryDepth: "deep",
+      aiSummaryLength: "detailed",
       autoPrefetch: true,
       enableBookHealth: true,
       enableReadingTimeline: true,
@@ -163,6 +173,10 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   aliasVoteQuorum: 3,
   askBeforeAliasMerge: true,
   quickImportMode: "ask",
+  aiProvider: "auto",
+  aiModel: "",
+  aiTemperature: 0.4,
+  aiSummaryLength: "balanced",
   // Reader specifics
   fontSize: 16,
   fontFamily: "serif",
@@ -226,6 +240,22 @@ export const normalizeUserSettings = (
       source.quickImportMode === "ask"
         ? source.quickImportMode
         : DEFAULT_USER_SETTINGS.quickImportMode,
+    aiProvider:
+      source.aiProvider === "auto" ||
+      source.aiProvider === "openrouter" ||
+      source.aiProvider === "openai" ||
+      source.aiProvider === "google"
+        ? source.aiProvider
+        : DEFAULT_USER_SETTINGS.aiProvider,
+    aiModel:
+      typeof source.aiModel === "string" ? source.aiModel.slice(0, 120) : DEFAULT_USER_SETTINGS.aiModel,
+    aiTemperature: clamp(Number(source.aiTemperature ?? DEFAULT_USER_SETTINGS.aiTemperature), 0, 1),
+    aiSummaryLength:
+      source.aiSummaryLength === "short" ||
+      source.aiSummaryLength === "balanced" ||
+      source.aiSummaryLength === "detailed"
+        ? source.aiSummaryLength
+        : DEFAULT_USER_SETTINGS.aiSummaryLength,
     autoPrefetch:
       typeof source.autoPrefetch === "boolean"
         ? source.autoPrefetch

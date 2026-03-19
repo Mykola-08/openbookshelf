@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync:reading-status": "node scripts/sync-reading-statuses.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.43",

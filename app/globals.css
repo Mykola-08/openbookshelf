@@ -5,6 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --surface: #f8fafc;
   --surface-accent-a: #dbeafe;
   --surface-accent-b: #ecfeff;
@@ -170,6 +172,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --surface: #10151d;
     --surface-accent-a: #172033;
     --surface-accent-b: #1a2b35;
@@ -184,6 +188,8 @@
 
 @media only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi) {
   :root {
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --border-hairline: 0.5px;
   }
 }

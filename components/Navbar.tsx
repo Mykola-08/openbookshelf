@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
   Cloud, User, Library, Layers as ListHeart, Compass, 
-  CheckCircle2, Settings2, Tags, Search, ChevronDown,
+  CheckCircle2, Settings2, Tags, Search, ChevronDown, CircleHelp, Wrench,
   Puzzle, BookOpen, Users, SlidersHorizontal
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -222,6 +222,16 @@ export function Navbar() {
                     <Settings2 className="h-4 w-4" /> Settings
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/setup" className="w-full cursor-pointer gap-2">
+                    <Wrench className="h-4 w-4" /> Setup
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/faq" className="w-full cursor-pointer gap-2">
+                    <CircleHelp className="h-4 w-4" /> FAQ
+                  </Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -265,6 +275,8 @@ export function Navbar() {
               {settings.enableConnections && <DropdownMenuItem asChild><Link href="/connections" className="w-full gap-2"><Cloud className="h-4 w-4" /> Connections</Link></DropdownMenuItem>}
               <DropdownMenuItem asChild><Link href="/modules" className="w-full gap-2"><Puzzle className="h-4 w-4" /> Modules</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link href="/settings" className="w-full gap-2"><Settings2 className="h-4 w-4" /> Settings</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/setup" className="w-full gap-2"><Wrench className="h-4 w-4" /> Setup</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/faq" className="w-full gap-2"><CircleHelp className="h-4 w-4" /> FAQ</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
