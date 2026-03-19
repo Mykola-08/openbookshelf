@@ -105,6 +105,24 @@ Provider behavior:
 - `firebase`: currently resolves to the local compatibility engine to keep app APIs consistent while Firebase credentials/settings are surfaced in runtime diagnostics.
 - `demo`: forces local demo client mode.
 
+## Reading Status Auto-Sync (New)
+
+OpenBookshelf now auto-synchronizes reading state while reading:
+- updates `reading_location`
+- updates `progress` as percent
+- transitions `toread/paused -> reading` once progress starts
+- transitions to `finished` when progress reaches ~100%
+
+For existing libraries, run a one-time status normalization job:
+
+```bash
+npm run sync:reading-status
+```
+
+Required env vars for the script:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
 ## AI Personalization (New)
 
 In **Settings → Preferences**, you can now customize AI behavior per user (stored in `user_settings`):
