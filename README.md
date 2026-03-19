@@ -10,6 +10,40 @@ OpenBookshelf is a modular, self-hosted personal library, e-reader, and reading 
 5. **Reading Tracking & Insights** (Kanban Style): Manage your library states natively with drag-and-drop. View detailed reading insights, yearly goals, reading streaks, and a comprehensive reading timeline.
 
 ---
+## Finish-up / "Everything Working" Checklist
+
+Use this checklist after deployment or local setup to verify the app is fully operational:
+
+1. **Install and run**
+   ```bash
+   npm install
+   npm run dev
+   ```
+2. **Run production validation**
+   ```bash
+   npm run lint
+   npm run build
+   ```
+3. **Verify runtime readiness**
+   - Open `/setup` in the browser for human-readable checks.
+   - Call `GET /api/v1/health` with a valid bearer token for machine-readable checks.
+4. **Verify core flows**
+   - Add/import at least one book.
+   - Open reader at `/read/[id]` and confirm progress + location sync updates in tracker.
+   - Confirm status auto-transitions (`toread -> reading -> finished`) as progress changes.
+5. **If using external connectors/API**
+   - Configure `EXTERNAL_SYNC_TOKEN` or `integration_keys`.
+   - Test `GET/POST /api/v1/books`, `POST /api/v1/user-books/sync`, and `GET /api/v1/connectors`.
+6. **If using Firebase mode**
+   - Set `NEXT_PUBLIC_DB_PROVIDER=firebase` with Firebase project/API env vars.
+   - Confirm health endpoint reports Firebase readiness and run a book create/read cycle.
+
+Troubleshooting quick hits:
+- If API auth fails, verify `Authorization: Bearer <token>` and key scope.
+- If provider auto-detection falls back unexpectedly, validate env vars and review `/setup`.
+- If reader progress does not persist, verify DB write permissions and `user_books` constraints.
+
+---
 
 ## Design Philosophy
 
@@ -91,7 +125,90 @@ NEXT_PUBLIC_SELF_HOSTED=false
 # Set to 'true' to run with local in-memory demo Supabase client
 # (also auto-enabled if Supabase URL/key are missing)
 NEXT_PUBLIC_SUPABASE_DEMO=false
+# Optional database provider override: supabase | firebase | demo
+# If omitted, app auto-detects from available env vars.
+NEXT_PUBLIC_DB_PROVIDER=supabase
+
+# Token required for external API sync endpoints
+EXTERNAL_SYNC_TOKEN=replace-with-strong-token
+
+# Firebase compatibility env hints (used for provider auto-detection)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_AUTO_ANON=true
+
+# Optional auth for Firebase REST compatibility mode
+FIREBASE_AUTH_EMAIL=
+FIREBASE_AUTH_PASSWORD=
+FIREBASE_SERVER_USER_ID=
+FIREBASE_SERVER_USER_EMAIL=
 ```
+
+Provider behavior:
+- `supabase`: uses Supabase directly (requires URL + anon key).
+- `firebase`: uses a Firebase REST compatibility client (Firestore + Identity Toolkit) with automatic anonymous sign-in by default (`NEXT_PUBLIC_FIREBASE_AUTO_ANON=true`).
+- `demo`: forces local demo client mode.
+
+### Firebase setup checklist
+1. Create a Firebase project and enable **Firestore Database**.
+2. Enable **Authentication** (Email/Password or Anonymous).
+3. Add API key + project ID to env vars shown above.
+4. If you want deterministic server user context for SSR/admin flows, set `FIREBASE_SERVER_USER_ID` and `FIREBASE_SERVER_USER_EMAIL`.
+5. Optional: set `FIREBASE_AUTH_EMAIL` + `FIREBASE_AUTH_PASSWORD` to use a fixed account instead of anonymous sign-in.
+
+## External API & Integrations (New)
+
+OpenBookshelf now exposes integration endpoints for external libraries and scanners:
+- `GET/POST /api/v1/books`
+- `POST /api/v1/user-books/sync`
+- `GET /api/v1/connectors?user_id=...`
+- `GET /api/v1/health`
+
+See full examples in `docs/EXTERNAL_API.md`.
+
+### Scoped integration keys (recommended)
+Use DB-backed `integration_keys` for rotation/revocation and keep `EXTERNAL_SYNC_TOKEN` only as a bootstrap fallback.
+
+Integration hardening now includes:
+- per-route scope enforcement (`api:v1:*` plus granular scopes)
+- optional key-bound `user_id` restrictions for user-scoped endpoints
+- strict UUID/input validation and bounded sync payload fields
+
+## FAQ Page (New)
+
+A built-in FAQ/how-to page is available at `/faq`.
+
+## Setup Page (New)
+
+A dedicated setup/readiness dashboard is available at `/setup` to verify DB provider, AI key status, and module readiness.
+
+## Reading Status Auto-Sync (New)
+
+OpenBookshelf now auto-synchronizes reading state while reading:
+- updates `reading_location`
+- updates `progress` as percent
+- transitions `toread/paused -> reading` once progress starts
+- transitions to `finished` when progress reaches ~100%
+
+For existing libraries, run a one-time status normalization job:
+
+```bash
+npm run sync:reading-status
+```
+
+Required env vars for the script:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+## AI Personalization (New)
+
+In **Settings → Preferences**, you can now customize AI behavior per user (stored in `user_settings`):
+- provider preference (`auto`, `openrouter`, `openai`, `google`)
+- optional model override
+- generation temperature
+- chapter summary length (`short`, `balanced`, `detailed`)
+
+These settings are used by AI server actions (`generateBookDescription`, `generateChapterSummary`) and fall back to environment defaults when not configured.
 
 ## Local Demo Mode
 
@@ -123,10 +240,14 @@ When `NEXT_PUBLIC_SELF_HOSTED=true`, the platform enables instance-level module 
 
 Admins can also define custom modules from `/modules`. Custom modules are persisted and toggleable for runtime UX adaptation.
 
+## Platform Architecture Blueprint
+
+See `docs/OPEN_READER_PLATFORM_PLAN.md` for the full architecture/product plan (audit, target modules, schema strategy, roadmap, and implementation boundaries).
+
 ## Tech Stack
 - Framework: Next.js 16 (App Router)
 - UI: Shadcn UI + Tailwind CSS
 - Reader Engine: react-reader (`epubjs`)
-- Database: Supabase (PostgreSQL) + Auth
+- Database: Unified provider runtime (Supabase-first, Firebase-compatible fallback, local demo mode)
 ## Contributing
 We welcome contributions! Feel free to open issues or submit pull requests.
