@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { User, Library, Filter, Layers, LayoutGrid, List, ArrowDownWideNarrow, BookOpen } from "lucide-react";
+import { Filter, LayoutGrid, List, Library, BookOpen } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import BookCard from "@/components/BookCard";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageShell } from "@/components/ui/page-shell";
 import MatchingInbox from "@/components/MatchingInbox";
 import { LibraryClientShell } from "@/components/LibraryClientShell";
 import { SelectableBookWrapper } from "@/components/SelectableBookWrapper";
@@ -85,8 +86,7 @@ export default async function Home(props: {
 
   return (
     <LibraryClientShell allUserBookIds={allUserBookIds}>
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
+    <PageShell className="flex flex-col md:flex-row gap-6 md:gap-8">
         
         {/* Sidebar / Filters — styled as a card on desktop, collapsible on mobile */}
         <aside className="w-full md:w-56 lg:w-60 flex-shrink-0 md:sticky md:top-20 h-max">
@@ -267,8 +267,7 @@ export default async function Home(props: {
             </div>
           )}
         </main>
-      </div>
-    </div>
+    </PageShell>
     </LibraryClientShell>
   );
 }

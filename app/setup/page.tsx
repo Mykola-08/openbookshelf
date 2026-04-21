@@ -1,19 +1,18 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageShell, PageHeader } from "@/components/ui/page-shell";
 import { getRuntimeHealthReport } from "@/lib/config/runtime-health";
 
 export default function SetupPage() {
   const report = getRuntimeHealthReport();
 
   return (
-    <main className="max-w-4xl mx-auto px-4 md:px-8 py-8 space-y-6 min-h-screen">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Setup & Runtime Health</h1>
-        <p className="text-muted-foreground">
-          Validate backend readiness, integration settings, reader/tracker modules, and AI connectivity.
-        </p>
-      </header>
+    <PageShell width="narrow" as="main" className="space-y-6">
+      <PageHeader
+        title="Setup & Runtime Health"
+        description="Validate backend readiness, integration settings, reader/tracker modules, and AI connectivity."
+      />
 
       <Card>
         <CardHeader>
@@ -51,6 +50,6 @@ export default function SetupPage() {
           <Link href="/discover" className="underline underline-offset-4 text-primary">Open Discover</Link>
         </CardContent>
       </Card>
-    </main>
+    </PageShell>
   );
 }

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageShell, PageHeader } from "@/components/ui/page-shell";
 import { createClient } from "@/utils/supabase/client";
 
 import {
@@ -94,20 +95,18 @@ export default function SettingsPage() {
   
 
   return (
-    <main className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 min-h-screen">
-      <div className="mb-6 flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Settings</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">
-            Manage your account, preferences, and modules.
-          </p>
-        </div>
-        <div className="flex items-center text-xs font-medium">
-          {saveState === 'saving' && <span className="text-muted-foreground animate-pulse flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full border-2 border-muted-foreground border-t-transparent animate-spin"/> Saving</span>}
-          {saveState === 'saved' && <span className="text-primary flex items-center gap-1">✓ Saved</span>}
-          {saveState === 'error' && <span className="text-destructive flex items-center gap-1">✕ Error</span>}
-        </div>
-      </div>
+    <PageShell width="prose" as="main" className="space-y-6">
+      <PageHeader
+        title="Settings"
+        description="Manage your account, preferences, and modules."
+        actions={
+          <div className="flex items-center text-xs font-medium">
+            {saveState === 'saving' && <span className="text-muted-foreground animate-pulse flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full border-2 border-muted-foreground border-t-transparent animate-spin"/> Saving</span>}
+            {saveState === 'saved' && <span className="text-primary flex items-center gap-1">✓ Saved</span>}
+            {saveState === 'error' && <span className="text-destructive flex items-center gap-1">✕ Error</span>}
+          </div>
+        }
+      />
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-6 w-full flex overflow-x-auto justify-start bg-muted/50 p-1 border border-border/30 rounded-xl">
@@ -563,6 +562,6 @@ export default function SettingsPage() {
           </TabsContent>
         )}
       </Tabs>
-    </main>
+    </PageShell>
   );
 }

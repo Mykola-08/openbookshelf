@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Compass, Globe, Plus, BookOpen, ExternalLink, Shield } from "lucide-react";
+import { Compass, Globe, Plus, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageShell, PageHeader } from "@/components/ui/page-shell";
 import { getDiscoverFeed } from "@/app/actions/discover";
 import { DiscoverFeed, FeedSkeleton } from "@/components/DiscoverFeed";
 
@@ -40,27 +41,19 @@ async function FeedContent() {
 
 export default function DiscoverPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto space-y-8 p-4 md:p-8">
-        {/* Header */}
-        <div className="flex items-end justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-              <Compass className="w-6 h-6" />
-              Discover
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Personalized recommendations and trending books from across the web.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+    <PageShell width="wide" className="space-y-8">
+        <PageHeader
+          icon={Compass}
+          title="Discover"
+          description="Personalized recommendations and trending books from across the web."
+          actions={
             <Button variant="ghost" size="sm" className="rounded-lg text-xs text-muted-foreground gap-1.5 h-8" asChild>
               <Link href="/connections/add">
                 <Plus className="w-3.5 h-3.5" /> Add Source
               </Link>
             </Button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Personalized feed */}
         <Suspense fallback={<FeedSkeleton />}>
@@ -110,7 +103,6 @@ export default function DiscoverPage() {
             </Button>
           </div>
         </details>
-      </div>
-    </div>
+    </PageShell>
   );
 }

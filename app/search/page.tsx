@@ -1,7 +1,8 @@
-import { Search, BookOpen, User, Library, Globe, Star, Filter, ArrowUpDown, ExternalLink } from "lucide-react";
+import { Search, BookOpen, Library, Globe, Star, Filter } from "lucide-react";
 import Link from "next/link";
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
+import { PageShell, PageHeader } from "@/components/ui/page-shell";
 import { globalSearch } from "@/app/actions/search";
 import type { SearchFilters, SearchResult } from "@/lib/search/search-engine";
 
@@ -150,31 +151,26 @@ export default async function SearchPage(props: {
   ].filter(Boolean) as string[];
 
   return (
-    <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-6 min-h-screen bg-background">
+    <PageShell as="main" className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Search Results</h1>
-        {query ? (
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <p className="text-muted-foreground">
-              {response ? response.total : 0} result{response?.total !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
-            </p>
-            {response && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Library className="w-3 h-3" /> {response.sources.library}</span>
-                <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {response.sources.catalogs}</span>
-                <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> {response.sources.openlibrary}</span>
-                <span className="text-muted-foreground/40">|</span>
-                <span>{response.timing}ms</span>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p className="text-muted-foreground">
-            Enter a term in the search bar to find books across your library, OPDS catalogs, and Open Library.
-          </p>
-        )}
-      </div>
+      <PageHeader
+        title="Search Results"
+        description={
+          query
+            ? `${response ? response.total : 0} result${response?.total !== 1 ? "s" : ""} for \u201C${query}\u201D`
+            : "Enter a term in the search bar to find books across your library, OPDS catalogs, and Open Library."
+        }
+      />
+
+      {query && response && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1"><Library className="w-3 h-3" /> {response.sources.library}</span>
+          <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {response.sources.catalogs}</span>
+          <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> {response.sources.openlibrary}</span>
+          <span className="text-muted-foreground/40">|</span>
+          <span>{response.timing}ms</span>
+        </div>
+      )}
 
       {/* Active filters */}
       {activeFilters.length > 0 && (
@@ -215,6 +211,6 @@ export default async function SearchPage(props: {
           </div>
         </div>
       )}
-    </main>
+    </PageShell>
   );
 }

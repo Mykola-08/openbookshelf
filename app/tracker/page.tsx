@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { BookOpen } from "lucide-react";
 import { TrackerBoard } from "@/components/TrackerBoard";
 import { ReadingInsights } from "@/components/ReadingInsights";
+import { PageShell, PageHeader } from "@/components/ui/page-shell";
 import { USER_SETTINGS_COOKIE_NAME, parseUserSettings } from "@/lib/config/user-settings";
 
 export const dynamic = 'force-dynamic';
@@ -43,28 +44,22 @@ export default async function TrackerPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        <div className="flex items-end justify-between">
-           <div>
-             <h1 className="text-2xl font-semibold tracking-tight">
-               Reading Progress
-             </h1>
-             <p className="text-muted-foreground text-sm mt-0.5">
-               Drag books between columns to update status.
-             </p>
-           </div>
-           <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 border border-border/30 py-1 px-2.5 rounded-lg">
+    <PageShell className="space-y-8">
+
+        <PageHeader
+          title="Reading Progress"
+          description="Drag books between columns to update status."
+          actions={
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 border border-border/30 py-1 px-2.5 rounded-lg">
               <BookOpen className="w-3.5 h-3.5" />
               <span>{userBooks?.length || 0} books</span>
-           </div>
-        </div>
+            </div>
+          }
+        />
 
         {userSettings.enableReadingInsights && <ReadingInsights books={insightBooks} />}
 
         <TrackerBoard initialBooks={trackerBooks} />
-      </div>
-    </div>
+    </PageShell>
   );
 }

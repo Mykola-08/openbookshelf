@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PageShell, PageHeader } from "@/components/ui/page-shell";
 
 const FAQ_ITEMS = [
   {
@@ -32,13 +33,11 @@ const FAQ_ITEMS = [
 
 export default function FaqPage() {
   return (
-    <main className="max-w-4xl mx-auto px-4 md:px-8 py-8 space-y-6 min-h-screen">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">FAQ & How-To</h1>
-        <p className="text-muted-foreground">
-          Quick answers for setup, sync, connectors, and automation workflows.
-        </p>
-      </header>
+    <PageShell width="narrow" as="main" className="space-y-6">
+      <PageHeader
+        title="FAQ & How-To"
+        description="Quick answers for setup, sync, connectors, and automation workflows."
+      />
 
       <div className="grid gap-4">
         {FAQ_ITEMS.map((item) => (
@@ -69,6 +68,6 @@ export default function FaqPage() {
           </Link>
         </CardContent>
       </Card>
-    </main>
+    </PageShell>
   );
 }
